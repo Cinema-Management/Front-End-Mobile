@@ -9,10 +9,13 @@ import {
     TouchableOpacity,
     FlatList,
     useWindowDimensions,
+    ScrollView,
 } from 'react-native';
 import phim1 from '../../assets/phim1.png';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
+import Container from '../components/Container';
+import { colors } from '../constants/colors';
 const { width, height } = Dimensions.get('window');
 
 export default function Home({ navigation }) {
@@ -23,7 +26,7 @@ export default function Home({ navigation }) {
     ];
 
     const FirstRoute = () => (
-        <View className="flex-1 bg-[#1c1c1c]">
+        <ScrollView style={{ flex: 1, marginBottom: 30 }} showsVerticalScrollIndicator={false}>
             <View className="pt-3">
                 <FlatList
                     data={carouselItems}
@@ -33,11 +36,11 @@ export default function Home({ navigation }) {
                     showsHorizontalScrollIndicator={false}
                 />
             </View>
-        </View>
+        </ScrollView>
     );
 
     const SecondRoute = () => (
-        <View className="flex-1 bg-[#1c1c1c]">
+        <ScrollView style={{ flex: 1, marginBottom: 30 }} showsVerticalScrollIndicator={false}>
             <View className="pt-3">
                 <FlatList
                     data={carouselItems}
@@ -47,11 +50,11 @@ export default function Home({ navigation }) {
                     showsHorizontalScrollIndicator={false}
                 />
             </View>
-        </View>
+        </ScrollView>
     );
 
     const ThirdRoute = () => (
-        <View className="flex-1 bg-[#1c1c1c]">
+        <ScrollView style={{ flex: 1, marginBottom: 30 }} showsVerticalScrollIndicator={false}>
             <View className="pt-3">
                 <FlatList
                     data={carouselItems}
@@ -61,7 +64,7 @@ export default function Home({ navigation }) {
                     showsHorizontalScrollIndicator={false}
                 />
             </View>
-        </View>
+        </ScrollView>
     );
 
     const renderScene = SceneMap({
@@ -86,8 +89,8 @@ export default function Home({ navigation }) {
                     {route.title}
                 </Text>
             )}
-            indicatorStyle={{ backgroundColor: '#1c1c1c' }}
-            style={{ backgroundColor: '#1c1c1c' }}
+            indicatorStyle={{ backgroundColor: 'white' }}
+            style={{ backgroundColor: 'transparent' }}
         />
     );
 
@@ -104,37 +107,39 @@ export default function Home({ navigation }) {
         <View style={styles.item}>
             <Image source={item.img} style={styles.image} />
 
-            <View className="bg-[#494949] gap-5 left-8 w-11/12 h-auto rounded-3xl relative bottom-24">
-                <View className=" ">
-                    <Text
-                        className="text-white text-[28px] leading-8 font-bold "
-                        numberOfLines={1}
-                        ellipsizeMode="tail"
-                    >
-                        {item.title}
-                    </Text>
-                    <Text className="text-gray-500 text-sm ">{item.time}</Text>
-                    <Text className="text-gray-500 text-sm">{item.category}</Text>
-                </View>
-                <View className="flex-row justify-between items-center ">
-                    <View className="flex-row space-x-1 ">
-                        <Icon name="star" size={20} color="#FF9933" />
-                        <Text className="text-white font-bold text-sm">8.7/10</Text>
+            <View
+                className="gap-5 left-8 w-11/12 h-auto rounded-3xl relative bottom-24"
+                style={{ backgroundColor: 'rgba(60, 60, 60,0.8)' }} // Màu xám với độ trong suốt nhẹ
+            >
+                <View className="">
+                    <View>
+                        <Text
+                            className="text-white text-[28px] leading-8 font-bold "
+                            numberOfLines={1}
+                            ellipsizeMode="tail"
+                        >
+                            {item.title}
+                        </Text>
+                        <Text className="text-gray-400 text-sm ">{item.time}</Text>
+                        <Text className="text-gray-400 text-sm">{item.category}</Text>
                     </View>
-                    <TouchableOpacity className="bg-red-400 w-24 mb-2 mr-2 h-10 rounded-[100px] justify-center items-center flex-row space-x-2 ">
-                        <Icon name="play-circle-outline" size={20} color="black" />
-                        <Text className="text-black text-sm">Trailer</Text>
-                    </TouchableOpacity>
+                    <View className="flex-row justify-between items-center ">
+                        <View className="flex-row space-x-1 ">
+                            <Icon name="star" size={20} color="#FF9933" />
+                            <Text className="text-white font-bold text-sm">8.7/10</Text>
+                        </View>
+                        <TouchableOpacity className="bg-red-400 w-24 mb-2 mr-2 h-10 rounded-[100px] justify-center items-center flex-row space-x-2 ">
+                            <Icon name="play-circle-outline" size={20} color="black" />
+                            <Text className="text-black text-sm">Trailer</Text>
+                        </TouchableOpacity>
+                    </View>
                 </View>
             </View>
         </View>
     );
 
     return (
-        <SafeAreaView style={{ flex: 1, backgroundColor: '#1c1c1c' }}>
-            <View className=" h-[60px] justify-center ">
-                <Text className="text-white text-[24px] leading-7 mx-6">Chào, Tùng</Text>
-            </View>
+        <Container isScroll={false} title="Chào, Tùng" alignItems="left" style={{ color: 'white', fontWeight: 700 }}>
             <TabView
                 navigationState={{ index, routes }}
                 renderScene={renderScene}
@@ -142,7 +147,7 @@ export default function Home({ navigation }) {
                 initialLayout={{ width: layout.width }}
                 renderTabBar={renderTabBar}
             />
-        </SafeAreaView>
+        </Container>
     );
 }
 

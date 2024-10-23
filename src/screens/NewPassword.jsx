@@ -109,7 +109,7 @@ export default function NewPassword({ navigation }) {
                         <Text
                             style={styles.buttonText}
                             className="text-center text-[18px] 
-                      font-bold text-black leading-5 font-kanit"
+                      font-bold text-black leading-5 "
                         >
                             Xác nhận
                         </Text>

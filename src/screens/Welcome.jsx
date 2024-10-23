@@ -16,9 +16,7 @@ export default function Welcome({ navigation }) {
             />
             <View className="absolute items-center bottom-0 left-2 p-0 m-0 h-[223px]">
                 <View className="items-center">
-                    <Text className="text-[32px] font-medium text-neutral-100 font-kanit leading-9">
-                        Chào mừng đến với TD
-                    </Text>
+                    <Text className="text-[32px] font-medium text-neutral-100 leading-9">Chào mừng đến với TD</Text>
                     <Text className="text-[16px] text-center text-neutral-100 ">
                         Ứng dụng đặt phim tốt nhất Việt Nam giúp bạn có một ngày tuyệt vời!
                     </Text>
@@ -37,7 +35,7 @@ export default function Welcome({ navigation }) {
                     />
                     <Text
                         style={styles.buttonText}
-                        className="text-center text-[18px] font-medium text-neutral-900 leading-5 font-kanit"
+                        className="text-center text-[18px] font-medium text-neutral-900 leading-5 "
                     >
                         Bắt đầu
                     </Text>

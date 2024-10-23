@@ -60,7 +60,7 @@ export default function SignInHome({ navigation }) {
                     />
                     <Text
                         style={styles.buttonText}
-                        className="text-center text-lg text-[18px] font-medium text-neutral-900 leading-5 font-kanit"
+                        className="text-center text-lg text-[18px] font-medium text-neutral-900 leading-5"
                     >
                         Đăng nhập bằng mật khẩu
                     </Text>

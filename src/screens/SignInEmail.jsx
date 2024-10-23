@@ -96,7 +96,7 @@ export default function SignInEmail({ navigation }) {
                         <Text
                             style={styles.buttonText}
                             className="text-center text-[18px] 
-                  font-medium text-neutral-900 leading-5 font-kanit"
+                  font-medium text-neutral-900 leading-5"
                         >
                             Đăng nhập{' '}
                         </Text>

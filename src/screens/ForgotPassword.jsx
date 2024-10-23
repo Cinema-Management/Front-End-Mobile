@@ -85,7 +85,7 @@ export default function ForgotPassword({ navigation }) {
                         <Text
                             style={styles.buttonText}
                             className="text-center text-[18px] 
-                      font-medium text-black leading-5 font-kanit"
+                      font-medium text-black leading-5 "
                         >
                             Tiếp tục
                         </Text>

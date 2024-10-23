@@ -1,50 +1,57 @@
 import React, { useState } from 'react';
-import { SafeAreaView, View, Text, useWindowDimensions, Image, Dimensions } from 'react-native';
+import { SafeAreaView, View, Text, useWindowDimensions, Image, Dimensions, ScrollView } from 'react-native';
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 import phim1 from '../../assets/phim1.png';
-
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
+import Container from '../components/Container';
+import { colors } from '../constants/colors';
 var { height, width } = Dimensions.get('window');
 
 const FirstRoute = () => (
-    <View className="flex-1 bg-[#1c1c1c]">
+    <ScrollView style={{ flex: 1, marginBottom: 30 }} showsVerticalScrollIndicator={false}>
         <View className="items-center my-6 space-y-3 py-2">
             <View
-                className="flex-row items-center justify-center h-24 bg-[#494949] rounded-xl px-4"
-                style={{ width: width * 0.9 }}
+                className="flex-row items-center justify-center h-24 rounded-xl px-4"
+                style={{ width: width * 0.9, backgroundColor: colors.backgroundColor }}
             >
-                <Image source={phim1} className="h-20 w-32 rounded" />
+                <Image source={phim1} className="h-20 w-16 rounded" resizeMode="contain" />
                 <View className="flex-1 ml-3">
                     <Text className="text-white text-base font-bold ">Giá ưu đãi cho học sinh, sinh viên</Text>
                 </View>
             </View>
 
             <View
-                className="flex-row items-center justify-center h-24 bg-[#494949] rounded-xl px-4"
-                style={{ width: width * 0.9 }}
+                className="flex-row items-center justify-center h-24 rounded-xl px-4"
+                style={{ width: width * 0.9, backgroundColor: colors.backgroundColor }}
             >
-                <Image source={phim1} className="h-20 w-32 rounded" />
+                <Image
+                    source={phim1}
+                    className="h-20 w-24 rounded"
+                    resizeMode="center
+                "
+                />
                 <View className="flex-1 ml-3">
                     <Text className="text-white text-base font-bold">Giá ưu đãi cho học sinh, sinh viên</Text>
                 </View>
             </View>
         </View>
-    </View>
+    </ScrollView>
 );
 
 const SecondRoute = () => (
-    <View className="flex-1 bg-[#1c1c1c]">
+    <ScrollView style={{ flex: 1, marginBottom: 30 }} showsVerticalScrollIndicator={false}>
         <View className="items-center my-6 space-y-3 py-2">
             <View
-                className="flex-row items-center justify-center h-24 bg-[#494949] rounded-xl px-4"
-                style={{ width: width * 0.9 }}
+                className="flex-row items-center justify-center h-24 rounded-xl px-4"
+                style={{ width: width * 0.9, backgroundColor: colors.backgroundColor }}
             >
-                <Image source={phim1} className="h-20 w-32 rounded" />
+                <Image source={phim1} className="h-20 w-16 rounded" resizeMode="contain" />
                 <View className="flex-1 ml-3">
                     <Text className="text-white text-base font-bold ">Mừng ngày 2/9 khuyến mãi lớn</Text>
                 </View>
             </View>
         </View>
-    </View>
+    </ScrollView>
 );
 
 const renderScene = SceneMap({
@@ -60,7 +67,6 @@ const renderTabBar = (props) => (
                 style={{
                     color: focused ? 'white' : 'gray',
                     textTransform: 'none',
-                    fontSize: 16,
                     fontWeight: focused ? 600 : 400,
                     paddingHorizontal: 10,
                 }}
@@ -69,7 +75,7 @@ const renderTabBar = (props) => (
             </Text>
         )}
         indicatorStyle={{ backgroundColor: 'white' }}
-        style={{ backgroundColor: '#1c1c1c' }}
+        style={{ backgroundColor: 'transparent' }}
     />
 );
 
@@ -83,20 +89,15 @@ export default function Promotion() {
     ]);
 
     return (
-        <SafeAreaView style={{ flex: 1, backgroundColor: '#1c1c1c' }}>
-            <View
-                style={{ alignItems: 'center', justifyContent: 'center', flexDirection: 'row', paddingHorizontal: 20 }}
-            >
-                <Text style={{ fontSize: 24, color: 'white', fontWeight: '500' }}>Tin mới và Ưu đãi</Text>
-            </View>
+        <Container isScroll={false} title="Tin mới và Ưa đãi" style={{ color: 'white', fontWeight: 700 }}>
             <TabView
+                style={{ height: hp(100) }}
                 navigationState={{ index, routes }}
                 renderScene={renderScene}
                 onIndexChange={setIndex}
                 initialLayout={{ width: layout.width }}
                 renderTabBar={renderTabBar}
-                style={{ marginTop: 16 }}
             />
-        </SafeAreaView>
+        </Container>
     );
 }
