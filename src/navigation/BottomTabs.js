@@ -6,7 +6,7 @@ import { AntDesign, MaterialCommunityIcons } from '@expo/vector-icons';
 import Promotion from '../screens/Promotion';
 import Ticket from '../screens/Ticket';
 import DeleteAccount from '../screens/DeleteAccount';
-import Welcome from '../screens/Welcome';
+import Review from '../screens/Review';
 const Tab = createBottomTabNavigator();
 
 const BottomTabs = ({ navigation }) => {
@@ -24,7 +24,6 @@ const BottomTabs = ({ navigation }) => {
                 tabBarActiveTintColor: 'white',
                 tabBarLabelStyle: {
                     color: 'gray',
-                    // fontSize: '13px',
                 },
             }}
         >
