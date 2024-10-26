@@ -23,33 +23,20 @@ import DropDownPicker from 'react-native-dropdown-picker';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import { AntDesign } from '@expo/vector-icons';
 import Checkbox from 'expo-checkbox';
+import InputComponent from '../components/InputComponent';
 import { Dropdown } from 'react-native-element-dropdown';
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
+import ButtonPrimary from '../components/ButtonPrimary';
 export default function Register({ navigation }) {
     var { height, width } = Dimensions.get('window');
-    const [open1, setOpen1] = useState(false);
-    const [value1, setValue1] = useState(null);
-    const [open2, setOpen2] = useState(false);
-    const [value2, setValue2] = useState(null);
-    const [open3, setOpen3] = useState(false);
-    const [value3, setValue3] = useState(null);
     const [isSelected, setSelection] = useState(false);
     const items = [
         { label: 'Nam', value: '1' },
         { label: 'Nữ', value: '2' },
     ];
 
-    const items1 = [
-        { value: '1', label: 'TP Hồ Chí Mình' },
-        { value: '2', label: 'TP Đà Nẵng' },
-        { value: '3', label: 'TP Vũng Tàu' },
-        { value: '4', label: 'Bình Định' },
-        { value: '5', label: 'Phú Yên' },
-        { value: '6', label: 'TP Vũng Tàu' },
-        { value: '7', label: 'Bình Định' },
-        { value: '8', label: 'Phú Yên' },
-    ];
-
     const [selectedValue, setSelectedValue] = useState(null);
+    const [passWord, setPassWord] = useState('');
     const data = [
         { label: 'Option 1 ', value: 'option1' },
         { label: 'Option 2', value: 'option2' },
@@ -59,25 +46,13 @@ export default function Register({ navigation }) {
         { label: 'Option 3', value: 'option3' },
         { label: 'Option 1 ', value: 'option1' },
         { label: 'Option 2', value: 'option2' },
-        { label: 'Option 3', value: 'option3' },
-        { label: 'Option 1 ', value: 'option1' },
-        { label: 'Option 2', value: 'option2' },
-        { label: 'Option 3', value: 'option3' },
-        { label: 'Option 1 ', value: 'option1' },
-        { label: 'Option 2', value: 'option2' },
-        { label: 'Option 3', value: 'option3' },
-        { label: 'Option 1 ', value: 'option1' },
-        { label: 'Option 2', value: 'option2' },
-        { label: 'Option 3', value: 'option3' },
-        { label: 'Option 1 ', value: 'option1' },
-        { label: 'Option 2', value: 'option2' },
-        { label: 'Option 3', value: 'option3' },
-        { label: 'Option 1 ', value: 'option1' },
-        { label: 'Option 2', value: 'option2' },
-        { label: 'Option 3', value: 'option3' },
     ];
     const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
     const [selectedDate, setSelectedDate] = useState(null);
+    const [showPass, setShowPass] = useState(false);
+    const toggleShowPass = () => {
+        setShowPass(!showPass);
+    };
     const showDatePicker = () => {
         setDatePickerVisibility(true);
     };
@@ -91,7 +66,7 @@ export default function Register({ navigation }) {
         hideDatePicker();
     };
     return (
-        <ImageBackground source={image1} className="flex-1 " style={{ width, height }}>
+        <ImageBackground source={image1} style={{ width, height }}>
             <LinearGradient
                 colors={['transparent', 'rgba(23,23,23,0.9)', 'rgba(23,23,23,0.9)']}
                 style={{ width, height }}
@@ -99,18 +74,17 @@ export default function Register({ navigation }) {
                 end={{ x: 0, y: 0 }}
                 className="absolute "
             />
-            <SafeAreaView className="flex-1">
-                <View className="mb-3">
-                    <TouchableOpacity className=" bg-[#555555] w-10 h-10 rounded-[100px] justify-center items-center ml-5">
-                        <Ionicons name="chevron-back" size={30} color="white" style={{ padding: '8px' }} />
-                    </TouchableOpacity>
-                </View>
-                <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
-                    <ScrollView
-                        className="flex-1 mb-10 "
-                        showsVerticalScrollIndicator={false}
-                        nestedScrollEnabled={true}
-                    >
+            <SafeAreaView style={{ height: hp(100), marginTop: Platform.OS === 'ios' ? 0 : 22 }}>
+                <TouchableOpacity className=" bg-[#555555] w-10 h-10 rounded-[100px] justify-center items-center ml-5">
+                    <Ionicons name="chevron-back" size={30} color="white" style={{ padding: '8px' }} />
+                </TouchableOpacity>
+
+                <KeyboardAvoidingView
+                    behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+                    style={{ height: hp(80) }}
+                    keyboardVerticalOffset={Platform.OS === 'ios' ? 10 : 100}
+                >
+                    <ScrollView showsVerticalScrollIndicator={false} nestedScrollEnabled={true}>
                         <View className="flex-1 h-[35%] ">
                             <Image className="m-auto" source={logo} />
                         </View>
@@ -146,9 +120,17 @@ export default function Register({ navigation }) {
                                         placeholder="Mật khẩu"
                                         placeholderTextColor="white"
                                         className="text-[15px] flex-1 py-3 h-auto text-white pl-2"
+                                        secureTextEntry={passWord ? !showPass : false}
                                     />
-                                    <Icon name="eye" size={20} color="#fff" />
+                                    <TouchableOpacity onPress={toggleShowPass}>
+                                        <Ionicons
+                                            name={showPass ? 'eye-off-outline' : 'eye-outline'}
+                                            size={20}
+                                            color="white"
+                                        />
+                                    </TouchableOpacity>
                                 </View>
+
                                 <Text className="text-red-600 pl-4 mt-1">Bắt buộc nhập</Text>
                             </View>
 
@@ -159,8 +141,15 @@ export default function Register({ navigation }) {
                                         placeholder="Xác nhận mật khẩu"
                                         placeholderTextColor="white"
                                         className="text-[15px] flex-1 py-3 h-auto text-white pl-2"
+                                        secureTextEntry={passWord ? !showPass : false}
                                     />
-                                    <Icon name="eye-off" size={20} color="#fff" />
+                                    <TouchableOpacity onPress={toggleShowPass}>
+                                        <Ionicons
+                                            name={showPass ? 'eye-off-outline' : 'eye-outline'}
+                                            size={20}
+                                            color="white"
+                                        />
+                                    </TouchableOpacity>
                                 </View>
                                 <Text className="text-red-600 pl-4 mt-1">Bắt buộc nhập</Text>
                             </View>
@@ -293,26 +282,48 @@ export default function Register({ navigation }) {
                                     </Text>
                                 </View>
                             </View>
-
-                            <TouchableOpacity className=" py-3 my-5">
-                                <LinearGradient
-                                    colors={['#ED999A', '#F6D365']}
-                                    style={styles.gradient}
-                                    start={{ x: 0.4, y: 0.1 }}
-                                    end={{ x: 0.9, y: 0.2 }}
-                                    className="absolute rounded-lg"
-                                />
-                                <Text
-                                    style={styles.buttonText}
-                                    className="text-center text-[18px] 
-                                font-medium text-black leading-5 "
-                                >
-                                    Đăng ký
-                                </Text>
-                            </TouchableOpacity>
+                            <View className="flex-row items-center mt-3">
+                                <View className="h-full w-[10%]">
+                                    <Checkbox value={isSelected} onValueChange={setSelection} className="p-[10px]" />
+                                </View>
+                                <View className="w-[90%]">
+                                    <Text className="text-white text-[14px] ">
+                                        Tôi đồng ý với{' '}
+                                        <Text className="text-[#F6D365] font-bold">Điều khoản sử dụng</Text> của TD Việt
+                                        Nam.
+                                    </Text>
+                                </View>
+                            </View>
+                            <View className="flex-row items-center mt-3">
+                                <View className="h-full w-[10%]">
+                                    <Checkbox value={isSelected} onValueChange={setSelection} className="p-[10px]" />
+                                </View>
+                                <View className="w-[90%]">
+                                    <Text className="text-white text-[14px] ">
+                                        Tôi đồng ý với{' '}
+                                        <Text className="text-[#F6D365] font-bold">Điều khoản sử dụng</Text> của TD Việt
+                                        Nam.
+                                    </Text>
+                                </View>
+                            </View>
+                            <View className="flex-row items-center mt-3">
+                                <View className="h-full w-[10%]">
+                                    <Checkbox value={isSelected} onValueChange={setSelection} className="p-[10px]" />
+                                </View>
+                                <View className="w-[90%]">
+                                    <Text className="text-white text-[14px] ">
+                                        Tôi đồng ý với{' '}
+                                        <Text className="text-[#F6D365] font-bold">Điều khoản sử dụng</Text> của TD Việt
+                                        Nam.
+                                    </Text>
+                                </View>
+                            </View>
                         </View>
                     </ScrollView>
                 </KeyboardAvoidingView>
+                <View style={styles.footer}>
+                    <ButtonPrimary title="Cập nhật" />
+                </View>
             </SafeAreaView>
         </ImageBackground>
     );
@@ -326,5 +337,16 @@ const styles = StyleSheet.create({
     },
     gradient: {
         ...StyleSheet.absoluteFillObject,
+    },
+    input: {
+        color: 'white',
+    },
+    footer: {
+        marginTop: 10,
+        heigh: hp(20),
+        width: wp(90),
+        justifyContent: 'center',
+        alignItems: 'center',
+        margin: 'auto',
     },
 });

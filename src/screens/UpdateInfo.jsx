@@ -21,15 +21,15 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import DropDownPicker from 'react-native-dropdown-picker';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { AntDesign } from '@expo/vector-icons';
-import Checkbox from 'expo-checkbox';
-import InputComponent from '../components/InputComponent';
+import Container from '../components/Container';
+import { colors } from '../constants/colors';
+import { Dropdown } from 'react-native-element-dropdown';
 import { color } from 'react-native-elements/dist/helpers';
-import Section from '../components/Section';
-import ButtonComponent from '../components/ButtonComponent';
+import ButtonPrimary from '../components/ButtonPrimary';
+var { height, width } = Dimensions.get('window');
+
 export default function UpdateInfo({ navigation }) {
-    var { height, width } = Dimensions.get('window');
     const [open1, setOpen1] = useState(false);
     const [value1, setValue1] = useState(null);
     const [open2, setOpen2] = useState(false);
@@ -42,6 +42,8 @@ export default function UpdateInfo({ navigation }) {
         { label: 'Nam', value: '1' },
         { label: 'Nữ', value: '2' },
     ];
+
+    const [selectedValue, setSelectedValue] = useState(null);
     const handlePress = () => {
         console.log('Button pressed!');
     };
@@ -70,40 +72,31 @@ export default function UpdateInfo({ navigation }) {
         hideDatePicker();
     };
     return (
-        <SafeAreaView style={styles.container}>
-            {/* Header */}
-            <View style={styles.header}>
-                <TouchableOpacity className="bg-[#555555] absolute left-3 w-10 h-10 rounded-[100px] justify-center items-center">
-                    <Ionicons name="chevron-back" size={30} color="white" style={{ padding: '8px' }} />
-                </TouchableOpacity>
-                <Text className="text-2xl font-medium text-white">Thông tin tài khoản</Text>
-            </View>
-
-            {/* Content */}
+        <Container isScroll={false} title="Thông tin tài khoản" back={true} style={{ color: 'white', fontWeight: 700 }}>
             <View style={styles.main}>
                 <KeyboardAvoidingView
                     behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
                     style={{ flex: 1 }}
-                    keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 100}
+                    keyboardVerticalOffset={Platform.OS === 'ios' ? 130 : 130}
                 >
                     <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
-                        <View style={{ height: hp('15%') }} className="justify-center items-center  py-2 relative">
+                        <View style={{ height: hp(10) }} className="justify-center items-center  py-2 relative">
                             <View style={{ position: 'relative' }}>
                                 <Image
                                     source={phim1}
                                     style={{
-                                        width: hp('10%'),
-                                        height: hp('10%'),
-                                        borderRadius: hp('5%'),
-                                        objectFit: 'fill',
+                                        width: hp(10),
+                                        height: hp(10),
+                                        borderRadius: 50,
+                                        objectFit: 'cover',
                                     }}
                                 />
                                 <TouchableOpacity
                                     style={{
                                         position: 'absolute',
                                         backgroundColor: 'orange',
-                                        top: hp('6%'),
-                                        right: hp('0%'),
+                                        bottom: 0,
+                                        right: 0,
                                         padding: 5,
                                         borderRadius: 50,
                                     }}
@@ -112,387 +105,441 @@ export default function UpdateInfo({ navigation }) {
                                 </TouchableOpacity>
                             </View>
                         </View>
-                        <View style={{ height: hp('10%') }} className=" mb-4">
-                            <Text className="text-white text-lg px-4 font-bold">Tài khoản của tôi là:</Text>
+                        <View style={{ flex: 1, marginTop: 25 }}>
+                            <View style={{ height: hp(10) }} className="mb-9">
+                                <Text className="text-white text-lg px-4  font-bold">Tài khoản của tôi là:</Text>
 
-                            <Text style={styles.text}>caotrungduong11@gmail.com</Text>
-                        </View>
-                        <View style={{ height: hp('24%'), zIndex: 2000, marginBottom: 16 }}>
-                            <Text className="text-white text-lg px-4 font-bold mb-2">Thông tin cá nhân:</Text>
-                            <View className="bg-[#494949] flex-1 ">
-                                <View className="flex-row px-4 py-1 justify-between items-center border-b border-white">
-                                    <Text
-                                        className="text-base text-white h-full "
-                                        style={{ width: wp('30%'), lineHeight: '40%' }}
-                                    >
-                                        Họ và tên
-                                    </Text>
-                                    <TextInput
-                                        style={styles.textInput}
-                                        placeholder="Cao Trùng Dương"
-                                        placeholderTextColor="white"
-                                        underlineColorAndroid="transparent"
-                                    />
-                                </View>
-                                <View className="flex-row px-4 py-1 justify-between items-center border-b border-white">
-                                    <Text
-                                        className="text-base text-white h-full "
-                                        style={{ width: wp('30%'), lineHeight: '40%' }}
-                                    >
-                                        Ngày sinh
-                                    </Text>
-                                    <View
-                                        style={{
-                                            alignItems: 'center',
-                                            flexDirection: 'row',
-                                            flex: 1,
-                                            height: '100%',
-                                            justifyContent: 'flex-end',
-                                            alignItems: 'center',
-                                            borderColor: 'transparent',
-                                        }}
-                                    >
-                                        <View>
-                                            <DateTimePickerModal
-                                                isVisible={isDatePickerVisible}
-                                                mode="date"
-                                                onConfirm={handleConfirm}
-                                                onCancel={hideDatePicker}
-                                                locale="vi-VN"
+                                <Text style={styles.text}>caotrungduong11@gmail.com</Text>
+                            </View>
+                            <View style={{ height: hp(30) }}>
+                                <Text className="text-white text-lg px-4 font-bold mb-4">Thông tin cá nhân:</Text>
+                                <View style={{ backgroundColor: colors.backgroundColor }}>
+                                    <View className="flex-row px-4 py-[5px]  justify-between items-center border-b border-[#8e8d8d]">
+                                        <Text
+                                            className="text-base text-white h-full "
+                                            style={{ width: wp(30), height: hp(5), lineHeight: hp(5) }}
+                                        >
+                                            Họ và tên
+                                        </Text>
+                                        <TextInput
+                                            style={styles.textInput}
+                                            placeholder="Cao Trùng Dương"
+                                            placeholderTextColor="white"
+                                            underlineColorAndroid="transparent"
+                                        />
+                                    </View>
+                                    <View className="flex-row px-4 py-1 justify-center items-center border-b border-[#8e8d8d]">
+                                        <Text
+                                            className="text-base text-white  h-full "
+                                            style={{ width: wp(30), height: hp(5), lineHeight: hp(5) }}
+                                        >
+                                            Ngày sinh
+                                        </Text>
+                                        <View
+                                            style={{
+                                                alignItems: 'center',
+                                                flexDirection: 'row',
+                                                flex: 1,
+                                                height: '100%',
+                                                justifyContent: 'flex-end',
+                                                alignItems: 'center',
+                                                borderColor: 'transparent',
+                                            }}
+                                        >
+                                            <View>
+                                                <DateTimePickerModal
+                                                    isVisible={isDatePickerVisible}
+                                                    mode="date"
+                                                    onConfirm={handleConfirm}
+                                                    onCancel={hideDatePicker}
+                                                    locale="vi-VN"
+                                                    headerTextIOS="Chọn ngày sinh"
+                                                />
+                                                {selectedDate && (
+                                                    <Text
+                                                        style={{
+                                                            fontSize: 16,
+                                                            color: 'white',
+                                                            padding: 8,
+                                                            marginLeft: 10,
+                                                            fontWeight: 'bold',
+                                                        }}
+                                                    >
+                                                        {selectedDate.toLocaleDateString()}
+                                                    </Text>
+                                                )}
+                                            </View>
+
+                                            <View>
+                                                <TouchableOpacity onPress={showDatePicker}>
+                                                    <AntDesign name="calendar" size={24} color="white" />
+                                                </TouchableOpacity>
+                                            </View>
+                                        </View>
+                                    </View>
+                                    <View className="flex-row px-4 py-[5px] justify-between items-center border-b border-gray-400">
+                                        <Text
+                                            className="text-base text-white h-full justify-center "
+                                            style={{ width: wp(50), height: hp(5), lineHeight: hp(5) }}
+                                        >
+                                            Giới tính
+                                        </Text>
+                                        <View className="flex-1 ">
+                                            <Dropdown
+                                                data={items}
+                                                labelField="label"
+                                                valueField="value"
+                                                maxHeight={100}
+                                                placeholder="Chọn"
+                                                value={selectedValue}
+                                                onChange={(item) => {
+                                                    setSelectedValue(item.value);
+                                                }}
+                                                style={{
+                                                    backgroundColor: 'transparent',
+                                                    color: 'white',
+                                                }}
+                                                selectedTextStyle={{
+                                                    color: 'white',
+                                                    textAlign: 'right',
+                                                    padding: 11,
+                                                    fontSize: 16,
+                                                    fontWeight: 'bold',
+                                                }}
+                                                iconStyle={{
+                                                    width: 20,
+                                                    height: 30,
+                                                    marginRight: 10,
+                                                }}
+                                                activeColor="transparent"
+                                                placeholderStyle={{
+                                                    color: 'white',
+                                                    textAlign: 'right',
+                                                    padding: 11,
+                                                    fontWeight: 'bold',
+                                                }}
+                                                containerStyle={{
+                                                    backgroundColor: '#494949',
+                                                    borderRadius: 5,
+                                                    height: 'auto',
+                                                    shadowColor: 'white',
+                                                    elevation: 10,
+                                                }}
+                                                iconColor="white"
+                                                itemTextStyle={{
+                                                    color: 'white',
+                                                    textAlign: 'center',
+                                                    height: 20,
+                                                }}
+                                                itemContainerStyle={{
+                                                    borderBottomWidth: 0.2,
+                                                    borderBottomColor: 'white',
+                                                    opacity: 0.9,
+                                                    justifyContent: 'center',
+                                                    marginBottom: 1,
+                                                    height: 40,
+                                                }}
                                             />
-                                            {selectedDate && (
-                                                <Text
-                                                    style={{
-                                                        fontSize: 16,
-                                                        color: 'white',
-                                                        padding: 8,
-                                                        marginLeft: 10,
-                                                        fontWeight: 'bold',
-                                                    }}
-                                                >
-                                                    {selectedDate.toLocaleDateString()}
-                                                </Text>
-                                            )}
-                                        </View>
-
-                                        <View>
-                                            <TouchableOpacity onPress={showDatePicker}>
-                                                <AntDesign name="calendar" size={24} color="white" />
-                                            </TouchableOpacity>
                                         </View>
                                     </View>
                                 </View>
-                                <View className="flex-row px-4 py-2 justify-between items-center border-b border-white">
-                                    <Text
-                                        className="text-base text-white h-full "
-                                        style={{ width: wp('60%'), lineHeight: '40%' }}
-                                    >
-                                        Giới tính
-                                    </Text>
-                                    <View className="flex-1" style={{ alignItems: 'flex-end' }}>
-                                        <DropDownPicker
-                                            open={open1}
-                                            value={value1}
-                                            items={items.map((item) => ({ ...item, key: item.value }))}
-                                            setOpen={setOpen1}
-                                            setValue={setValue1}
-                                            placeholder="Nam"
-                                            containerStyle={{
-                                                flex: 1,
-                                                height: 40,
-                                                justifyContent: 'center',
-                                            }}
-                                            style={{
-                                                backgroundColor: '#494949',
-                                                borderColor: 'red',
-                                                height: 40,
-                                                paddingVertical: 0,
-                                                paddingHorizontal: 0,
-                                                paddingLeft: 40,
-                                            }}
-                                            labelStyle={{
-                                                paddingLeft: 10,
-                                                color: 'white',
-                                            }}
-                                            dropDownContainerStyle={{
-                                                backgroundColor: '#3b3b3b',
-                                                maxHeight: 100,
-                                            }}
-                                            textStyle={{
-                                                fontSize: 16,
-                                                color: 'white',
-                                                fontWeight: 'bold',
-                                                textAlign: 'right',
-                                            }}
-                                            theme="DARK"
-                                            listMode="SCROLLVIEW"
+                            </View>
+                            <View style={{ flex: 1 }}>
+                                <Text className="text-white text-lg px-4 font-bold mb-4">Liên hệ:</Text>
+                                <View style={{ backgroundColor: colors.backgroundColor }}>
+                                    <View className="flex-row px-4 py-[5px] justify-between items-center border-b border-[#8e8d8d]">
+                                        <Text
+                                            className="text-base text-white h-full "
+                                            style={{ width: wp(25), height: hp(5), lineHeight: hp(5) }}
+                                        >
+                                            Email
+                                        </Text>
+                                        <TextInput
+                                            style={styles.textInput}
+                                            placeholder="caotrungduong11@gmail.com"
+                                            placeholderTextColor="white"
+                                            underlineColorAndroid="transparent"
+                                            ellipsizeMode="tail"
+                                        />
+                                    </View>
+                                    <View className="flex-row px-4 py-[5px] justify-between items-center border-b border-[#8e8d8d]">
+                                        <Text
+                                            className="text-base text-white h-full "
+                                            style={{ width: wp(30), height: hp(5), lineHeight: hp(5) }}
+                                        >
+                                            Tỉnh/thành
+                                        </Text>
+                                        <View className="flex-1 ">
+                                            <Dropdown
+                                                data={items1}
+                                                labelField="label"
+                                                valueField="value"
+                                                maxHeight={100}
+                                                placeholder="Chọn"
+                                                value={selectedValue}
+                                                onChange={(item) => {
+                                                    setSelectedValue(item.value);
+                                                }}
+                                                style={{
+                                                    backgroundColor: 'transparent',
+                                                    color: 'white',
+                                                }}
+                                                selectedTextStyle={{
+                                                    color: 'white',
+                                                    textAlign: 'right',
+
+                                                    padding: 11,
+                                                    fontSize: 16,
+                                                    fontWeight: 'bold',
+                                                }}
+                                                search={true}
+                                                searchPlaceholder="Tìm kiếm..."
+                                                searchPlaceholderTextColor="white"
+                                                inputSearchStyle={{ color: 'white' }}
+                                                activeColor="rgba(205, 207, 212, 0.6)"
+                                                iconStyle={{
+                                                    width: 20,
+                                                    height: 30,
+                                                    marginRight: 10,
+                                                }}
+                                                placeholderStyle={{
+                                                    color: 'white',
+                                                    textAlign: 'right',
+                                                    padding: 11,
+                                                    fontWeight: 'bold',
+                                                }}
+                                                containerStyle={{
+                                                    backgroundColor: '#494949',
+                                                    borderRadius: 5,
+                                                    height: hp(50),
+                                                    width: wp(80),
+                                                    shadowColor: 'white',
+                                                    elevation: 10,
+                                                }}
+                                                iconColor="white"
+                                                itemTextStyle={{
+                                                    color: 'white',
+                                                    height: 20,
+                                                }}
+                                                itemContainerStyle={{
+                                                    borderBottomWidth: 0.2,
+                                                    borderBottomColor: 'white',
+                                                    opacity: 0.9,
+                                                    justifyContent: 'center',
+                                                    marginBottom: 1,
+                                                    height: 40,
+                                                }}
+                                                mode="modal"
+                                            />
+                                        </View>
+                                    </View>
+                                    <View className="flex-row px-4 py-[5px] justify-between items-center border-b border-[#8e8d8d]">
+                                        <Text
+                                            className="text-base text-white h-full "
+                                            style={{ width: wp(30), height: hp(5), lineHeight: hp(5) }}
+                                        >
+                                            Quận/huyện
+                                        </Text>
+                                        <View className="flex-1 ">
+                                            <Dropdown
+                                                data={items1}
+                                                labelField="label"
+                                                valueField="value"
+                                                maxHeight={100}
+                                                placeholder="Chọn"
+                                                value={selectedValue}
+                                                onChange={(item) => {
+                                                    setSelectedValue(item.value);
+                                                }}
+                                                style={{
+                                                    backgroundColor: 'transparent',
+                                                    color: 'white',
+                                                }}
+                                                selectedTextStyle={{
+                                                    color: 'white',
+                                                    textAlign: 'right',
+
+                                                    padding: 11,
+                                                    fontSize: 16,
+                                                    fontWeight: 'bold',
+                                                }}
+                                                search={true}
+                                                searchPlaceholder="Tìm kiếm..."
+                                                searchPlaceholderTextColor="white"
+                                                inputSearchStyle={{ color: 'white' }}
+                                                activeColor="rgba(205, 207, 212, 0.6)"
+                                                iconStyle={{
+                                                    width: 20,
+                                                    height: 30,
+                                                    marginRight: 10,
+                                                }}
+                                                placeholderStyle={{
+                                                    color: 'white',
+                                                    textAlign: 'right',
+                                                    padding: 11,
+                                                    fontWeight: 'bold',
+                                                }}
+                                                containerStyle={{
+                                                    backgroundColor: '#494949',
+                                                    borderRadius: 5,
+                                                    height: hp(50),
+                                                    width: wp(80),
+                                                    shadowColor: 'white',
+                                                    elevation: 10,
+                                                }}
+                                                iconColor="white"
+                                                itemTextStyle={{
+                                                    color: 'white',
+                                                    height: 20,
+                                                }}
+                                                itemContainerStyle={{
+                                                    borderBottomWidth: 0.2,
+                                                    borderBottomColor: 'white',
+                                                    opacity: 0.9,
+                                                    justifyContent: 'center',
+                                                    marginBottom: 1,
+                                                    height: 40,
+                                                }}
+                                                mode="modal"
+                                            />
+                                        </View>
+                                    </View>
+                                    <View className="flex-row px-4 py-[5px] justify-between items-center border-b border-[#8e8d8d]">
+                                        <Text
+                                            className="text-base text-white h-full "
+                                            style={{ width: wp(30), height: hp(5), lineHeight: hp(5) }}
+                                        >
+                                            Phường/xã
+                                        </Text>
+                                        <View className="flex-1 ">
+                                            <Dropdown
+                                                data={items1}
+                                                labelField="label"
+                                                valueField="value"
+                                                maxHeight={100}
+                                                placeholder="Nam"
+                                                value={selectedValue}
+                                                onChange={(item) => {
+                                                    setSelectedValue(item.value);
+                                                }}
+                                                style={{
+                                                    backgroundColor: 'transparent',
+                                                    color: 'white',
+                                                }}
+                                                selectedTextStyle={{
+                                                    color: 'white',
+                                                    textAlign: 'right',
+
+                                                    padding: 11,
+                                                    fontSize: 16,
+                                                    fontWeight: 'bold',
+                                                }}
+                                                search={true}
+                                                searchPlaceholder="Tìm kiếm..."
+                                                searchPlaceholderTextColor="white"
+                                                inputSearchStyle={{ color: 'white' }}
+                                                activeColor="rgba(205, 207, 212, 0.6)"
+                                                iconStyle={{
+                                                    width: 20,
+                                                    height: 30,
+                                                    marginRight: 10,
+                                                }}
+                                                placeholderStyle={{
+                                                    color: 'white',
+                                                    textAlign: 'right',
+                                                    padding: 11,
+                                                }}
+                                                containerStyle={{
+                                                    backgroundColor: '#494949',
+                                                    borderRadius: 5,
+                                                    height: hp(50),
+                                                    width: wp(80),
+                                                    shadowColor: 'white',
+                                                    elevation: 10,
+                                                }}
+                                                iconColor="white"
+                                                itemTextStyle={{
+                                                    color: 'white',
+                                                    height: 20,
+                                                }}
+                                                itemContainerStyle={{
+                                                    borderBottomWidth: 0.2,
+                                                    borderBottomColor: 'white',
+                                                    opacity: 0.9,
+                                                    justifyContent: 'center',
+                                                    marginBottom: 1,
+                                                    height: 40,
+                                                }}
+                                                mode="modal"
+                                            />
+                                        </View>
+                                    </View>
+                                    <View className="flex-row px-4 py-[5px] justify-between items-center border-b border-[#8e8d8d]">
+                                        <Text
+                                            className="text-base text-white h-full "
+                                            style={{ width: wp(30), height: hp(5), lineHeight: hp(5) }}
+                                        >
+                                            Địa chỉ chi tiết
+                                        </Text>
+                                        <TextInput
+                                            style={styles.textInput}
+                                            placeholder="4 Nguyễn Văn Bảo"
+                                            placeholderTextColor="white"
+                                            underlineColorAndroid="transparent"
+                                            ellipsizeMode="tail"
                                         />
                                     </View>
                                 </View>
                             </View>
-                        </View>
-                        <View style={{ height: hp('38%') }}>
-                            <Text className="text-white text-lg px-4 font-bold mb-2">Liên hệ:</Text>
-                            <View className="bg-[#494949] flex-1 ">
-                                <View className="flex-row px-4 py-1 justify-between items-center border-b border-white">
-                                    <Text
-                                        className="text-base text-white h-full "
-                                        style={{ width: wp('25%'), lineHeight: '40%' }}
-                                    >
-                                        Email
-                                    </Text>
-                                    <TextInput
-                                        style={styles.textInput}
-                                        placeholder="caotrungduong11@gmail.com"
-                                        placeholderTextColor="white"
-                                        underlineColorAndroid="transparent"
-                                        ellipsizeMode="tail"
-                                    />
-                                </View>
 
-                                <View className="flex-row px-4 py-2 z-50 justify-between items-center border-b border-white">
-                                    <Text
-                                        className="text-base text-white h-full "
-                                        style={{ width: wp('30%'), lineHeight: '40%' }}
-                                    >
-                                        Tỉnh/thành
-                                    </Text>
-                                    <View className="flex-1">
-                                        <DropDownPicker
-                                            open={open2}
-                                            value={value2}
-                                            items={items1.map((item) => ({ ...item, key: item.value }))}
-                                            setOpen={setOpen2}
-                                            setValue={setValue2}
-                                            placeholder="Tỉnh/thành"
-                                            containerStyle={{
-                                                flex: 1,
-                                                height: 40,
-                                                justifyContent: 'center',
-                                            }}
-                                            style={{
-                                                backgroundColor: '#494949',
-                                                borderColor: 'transparent',
-                                                height: 40,
-                                                paddingVertical: 0,
-                                                paddingHorizontal: 0,
-                                                justifyContent: 'right',
-                                                paddingLeft: 60,
-                                            }}
-                                            labelStyle={{
-                                                paddingLeft: 10,
-                                                color: 'white',
-                                            }}
-                                            dropDownContainerStyle={{
-                                                backgroundColor: '#3b3b3b',
-                                                maxHeight: 100,
-                                            }}
-                                            textStyle={{
-                                                fontSize: 16,
-                                                color: 'white',
-                                                fontWeight: 'bold',
-                                            }}
-                                            listMode="SCROLLVIEW"
-                                            theme="DARK"
-                                        />
-                                    </View>
-                                </View>
-                                <View className="flex-row px-4 py-2 z-40 justify-between items-center border-b border-white">
-                                    <Text
-                                        className="text-base text-white h-full "
-                                        style={{ width: wp('30%'), lineHeight: '40%' }}
-                                    >
-                                        Quận/huyện
-                                    </Text>
-                                    <View className="flex-1 " style={{ zIndex: 1000 }}>
-                                        <DropDownPicker
-                                            open={open3}
-                                            value={value3}
-                                            items={items1.map((item) => ({ ...item, key: item.value }))}
-                                            setOpen={setOpen3}
-                                            setValue={setValue3}
-                                            placeholder="Quận/huyện"
-                                            containerStyle={{
-                                                flex: 1,
-                                                height: 40,
-                                                justifyContent: 'center',
-                                            }}
-                                            style={{
-                                                backgroundColor: '#494949',
-                                                borderColor: 'transparent',
-                                                height: 40,
-                                                paddingVertical: 0,
-                                                paddingHorizontal: 0,
-                                                justifyContent: 'right',
-                                                paddingLeft: 60,
-                                            }}
-                                            labelStyle={{
-                                                paddingLeft: 10,
-                                                color: 'white',
-                                            }}
-                                            dropDownContainerStyle={{
-                                                backgroundColor: '#3b3b3b',
-                                                maxHeight: 100,
-                                            }}
-                                            textStyle={{
-                                                fontSize: 16,
-                                                color: 'white',
-                                                fontWeight: 'bold',
-                                            }}
-                                            listMode="SCROLLVIEW"
-                                            theme="DARK"
-                                        />
-                                    </View>
-                                </View>
+                            <View className=" mt-4 mb-4 flex-row ">
+                                <View className="px-4 flex-row justify-between w-full items-center">
+                                    <TouchableOpacity>
+                                        <Text className="text-white text-base  font-bold py-2">Thay đổi mật khẩu</Text>
+                                    </TouchableOpacity>
 
-                                <View className="flex-row px-4 py-2 z-30 justify-between items-center border-b border-white">
-                                    <Text
-                                        className="text-base text-white h-full "
-                                        style={{ width: wp('30%'), lineHeight: '40%' }}
-                                    >
-                                        Phường/xã
-                                    </Text>
-                                    <View className="flex-1 " style={{ zIndex: 1000 }}>
-                                        <DropDownPicker
-                                            open={open4}
-                                            value={value4}
-                                            items={items1.map((item) => ({ ...item, key: item.value }))}
-                                            setOpen={setOpen4}
-                                            setValue={setValue4}
-                                            placeholder="Phường/xã"
-                                            containerStyle={{
-                                                flex: 1,
-                                                height: 40,
-                                                justifyContent: 'center',
-                                            }}
-                                            style={{
-                                                backgroundColor: '#494949',
-                                                borderColor: 'transparent',
-                                                height: 40,
-                                                paddingVertical: 0,
-                                                paddingHorizontal: 0,
-                                                justifyContent: 'right',
-                                                paddingLeft: 60,
-                                            }}
-                                            labelStyle={{
-                                                paddingLeft: 10,
-                                                color: 'white',
-                                            }}
-                                            dropDownContainerStyle={{
-                                                backgroundColor: '#3b3b3b',
-                                                maxHeight: 100,
-                                            }}
-                                            textStyle={{
-                                                fontSize: 16,
-                                                color: 'white',
-                                                fontWeight: 'bold',
-                                            }}
-                                            listMode="SCROLLVIEW"
-                                            theme="DARK"
-                                        />
-                                    </View>
+                                    <TouchableOpacity>
+                                        <Text className="text-red-600 text-base font-bold">Xóa tài khoản</Text>
+                                    </TouchableOpacity>
                                 </View>
-                                <View className="flex-row px-4 py-1 justify-between items-center border-b border-white">
-                                    {/* <Text
-                                        className="text-base text-white h-full "
-                                        style={{ width: wp('30%'), lineHeight: '40%' }}
-                                    >
-                                        Địa chỉ chi tiết
-                                    </Text>
-                                    <TextInput
-                                        style={styles.textInput}
-                                        placeholder="4 Nguyễn Văn Bảo"
-                                        placeholderTextColor="white"
-                                        underlineColorAndroid="transparent"
-                                        ellipsizeMode="tail"
-                                    /> */}
-                                </View>
-                            </View>
-                        </View>
-                        {/* <InputComponent
-                            // value={inputValue}
-                            // onChange={handleInputChange}
-                            placeholder="Nhập tên của bạn"
-                            title="Tên"
-                            allowClear={true}
-                            password={false}
-                            prefix={<Icon name="account" size={24} color="white" />}
-                            affix={<Icon name="account" size={24} color="white" />}
-                            inputStyles={{ color: 'red' }}
-
-                            // showPass={showPassword}
-                            // setShowPass={togglePasswordVisibility}
-                        /> */}
-                        <ButtonComponent
-                            text="Click Me"
-                            onPress={handlePress}
-                            icon={<AntDesign name="arrowright" size={20} color="white" />}
-                            type="primary"
-                            styles={styles.button}
-                        />
-                        <View style={{ height: hp('5%') }} className=" mt-4 mb-4 flex-row">
-                            <View className="px-4 flex-row justify-between w-full items-center">
-                                <TouchableOpacity>
-                                    <Text className="text-white text-base  font-bold">Thay đổi mật khẩu</Text>
-                                </TouchableOpacity>
-
-                                <TouchableOpacity>
-                                    <Text className="text-red-600 text-base font-bold">Xóa tài khoản</Text>
-                                </TouchableOpacity>
                             </View>
                         </View>
                     </ScrollView>
                 </KeyboardAvoidingView>
             </View>
 
-            {/* Footer */}
-            <View style={styles.footer}>
-                <TouchableOpacity className=" px-3">
-                    <LinearGradient
-                        colors={['#ED999A', '#F6D365']}
-                        style={{ borderRadius: 10, padding: 15 }}
-                        start={{ x: 0.4, y: 0.1 }}
-                        end={{ x: 0.9, y: 0.2 }}
-                    >
-                        <Text style={{ textAlign: 'center', fontSize: 18, fontWeight: 'bold', color: 'black' }}>
-                            Cập nhật
-                        </Text>
-                    </LinearGradient>
-                </TouchableOpacity>
+            <View>
+                <View style={styles.footer}>
+                    <ButtonPrimary title="Cập nhật" />
+                </View>
             </View>
-        </SafeAreaView>
+        </Container>
     );
 }
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#1c1c1c',
-    },
-    header: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        flexDirection: 'row',
-    },
     main: {
-        flex: 11,
-        gap: 10,
+        width: wp(100),
+        height: height * 0.75,
     },
     footer: {
-        flex: 1,
+        marginTop: 10,
+        height: height * 0.1,
+        width: wp(100),
         justifyContent: 'center',
+        alignItems: 'center',
+        margin: 'auto',
     },
     text: {
-        height: hp('5%'),
+        height: hp(6),
         borderColor: 'gray',
-
-        backgroundColor: '#494949',
+        backgroundColor: colors.backgroundColor,
         color: 'white',
         marginTop: 5,
         paddingHorizontal: 16,
         justifyContent: 'center',
+
         fontSize: 16,
-        lineHeight: hp('5%'),
+        lineHeight: hp(6),
     },
     textInput: {
         borderColor: 'transparent',
@@ -504,8 +551,5 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         textAlign: 'right',
         paddingVertical: 0,
-    },
-    gradient: {
-        ...StyleSheet.absoluteFillObject,
     },
 });

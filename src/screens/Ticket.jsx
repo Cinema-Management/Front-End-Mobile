@@ -7,124 +7,161 @@ import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-nat
 import { colors } from '../constants/colors';
 var { height, width } = Dimensions.get('window');
 
-const FirstRoute = () => (
-    <ScrollView style={{ flex: 1, marginBottom: 30 }} showsVerticalScrollIndicator={false}>
-        <View className="items-center my-6 space-y-3">
-            <View
-                className="flex-row items-center justify-center h-28 rounded-xl px-4"
-                style={{ width: width * 0.9, backgroundColor: colors.backgroundColor }}
-            >
-                <Image source={phim1} className="h-20 w-16 rounded" resizeMode="contain" />
-                <View className="flex-1 ml-3">
-                    <Text className="text-white text-base font-bold truncate" ellipsizeMode="tail" numberOfLines={2}>
-                        Đẹp trai thấy sai sai
-                    </Text>
-                    <Text className="text-white text-[14px] font-normal ">TD Phan</Text>
-                    <Text className="text-white text-[14px] font-normal mt-2">16:10 | CN, 18/08</Text>
+const FirstRoute = () => {
+    console.log('Rendering First Route');
+    return (
+        <ScrollView style={{ flex: 1, marginBottom: 30 }} showsVerticalScrollIndicator={false}>
+            <View className="items-center my-6 space-y-3">
+                <View
+                    className="flex-row items-center justify-center h-28 rounded-xl px-4"
+                    style={{ width: width * 0.9, backgroundColor: colors.backgroundColor }}
+                >
+                    <Image source={phim1} className="h-20 w-16 rounded" resizeMode="contain" />
+                    <View className="flex-1 ml-3">
+                        <Text
+                            className="text-white text-base font-bold truncate"
+                            ellipsizeMode="tail"
+                            numberOfLines={2}
+                        >
+                            Đẹp trai thấy sai sai
+                        </Text>
+                        <Text className="text-white text-[14px] font-normal ">TD Phan</Text>
+                        <Text className="text-white text-[14px] font-normal mt-2">16:10 | CN, 18/08</Text>
+                    </View>
+                </View>
+                <View
+                    className="flex-row items-center justify-center h-28 rounded-xl px-4"
+                    style={{ width: width * 0.9, backgroundColor: colors.backgroundColor }}
+                >
+                    <Image source={phim1} className="h-20 w-16 rounded" resizeMode="contain" />
+                    <View className="flex-1 ml-3">
+                        <Text
+                            className="text-white text-base font-bold truncate"
+                            ellipsizeMode="tail"
+                            numberOfLines={2}
+                        >
+                            Đẹp trai thấy sai sai
+                        </Text>
+                        <Text className="text-white text-[14px] font-normal ">TD Phan</Text>
+                        <Text className="text-white text-[14px] font-normal mt-2">16:10 | CN, 18/08</Text>
+                    </View>
+                </View>
+                <View
+                    className="flex-row items-center justify-center h-28 rounded-xl px-4"
+                    style={{ width: width * 0.9, backgroundColor: colors.backgroundColor }}
+                >
+                    <Image source={phim1} className="h-20 w-16 rounded" resizeMode="contain" />
+                    <View className="flex-1 ml-3">
+                        <Text
+                            className="text-white text-base font-bold truncate"
+                            ellipsizeMode="tail"
+                            numberOfLines={2}
+                        >
+                            Đẹp trai thấy sai sai
+                        </Text>
+                        <Text className="text-white text-[14px] font-normal ">TD Phan</Text>
+                        <Text className="text-white text-[14px] font-normal mt-2">16:10 | CN, 18/08</Text>
+                    </View>
+                </View>
+                <View
+                    className="flex-row items-center justify-center h-28 rounded-xl px-4"
+                    style={{ width: width * 0.9, backgroundColor: colors.backgroundColor }}
+                >
+                    <Image source={phim1} className="h-20 w-16 rounded" resizeMode="contain" />
+                    <View className="flex-1 ml-3">
+                        <Text
+                            className="text-white text-base font-bold truncate"
+                            ellipsizeMode="tail"
+                            numberOfLines={2}
+                        >
+                            Đẹp trai thấy sai sai
+                        </Text>
+                        <Text className="text-white text-[14px] font-normal ">TD Phan</Text>
+                        <Text className="text-white text-[14px] font-normal mt-2">16:10 | CN, 18/08</Text>
+                    </View>
+                </View>
+                <View
+                    className="flex-row items-center justify-center h-28 rounded-xl px-4"
+                    style={{ width: width * 0.9, backgroundColor: colors.backgroundColor }}
+                >
+                    <Image source={phim1} className="h-20 w-16 rounded" resizeMode="contain" />
+                    <View className="flex-1 ml-3">
+                        <Text
+                            className="text-white text-base font-bold truncate"
+                            ellipsizeMode="tail"
+                            numberOfLines={2}
+                        >
+                            Đẹp trai thấy sai sai
+                        </Text>
+                        <Text className="text-white text-[14px] font-normal ">TD Phan</Text>
+                        <Text className="text-white text-[14px] font-normal mt-2">16:10 | CN, 18/08</Text>
+                    </View>
+                </View>
+                <View
+                    className="flex-row items-center justify-center h-28 rounded-xl px-4"
+                    style={{ width: width * 0.9, backgroundColor: colors.backgroundColor }}
+                >
+                    <Image source={phim1} className="h-20 w-16 rounded" resizeMode="contain" />
+                    <View className="flex-1 ml-3">
+                        <Text
+                            className="text-white text-base font-bold truncate"
+                            ellipsizeMode="tail"
+                            numberOfLines={2}
+                        >
+                            Đẹp trai thấy sai sai
+                        </Text>
+                        <Text className="text-white text-[14px] font-normal ">TD Phan</Text>
+                        <Text className="text-white text-[14px] font-normal mt-2">16:10 | CN, 18/08</Text>
+                    </View>
+                </View>
+                <View
+                    className="flex-row items-center justify-center h-28 rounded-xl px-4"
+                    style={{ width: width * 0.9, backgroundColor: colors.backgroundColor }}
+                >
+                    <Image source={phim1} className="h-20 w-16 rounded" resizeMode="contain" />
+                    <View className="flex-1 ml-3">
+                        <Text
+                            className="text-white text-base font-bold truncate"
+                            ellipsizeMode="tail"
+                            numberOfLines={2}
+                        >
+                            Đẹp trai thấy sai sai
+                        </Text>
+                        <Text className="text-white text-[14px] font-normal ">TD Phan</Text>
+                        <Text className="text-white text-[14px] font-normal mt-2">16:10 | CN, 18/08</Text>
+                    </View>
                 </View>
             </View>
-            <View
-                className="flex-row items-center justify-center h-28 rounded-xl px-4"
-                style={{ width: width * 0.9, backgroundColor: colors.backgroundColor }}
-            >
-                <Image source={phim1} className="h-20 w-16 rounded" resizeMode="contain" />
-                <View className="flex-1 ml-3">
-                    <Text className="text-white text-base font-bold truncate" ellipsizeMode="tail" numberOfLines={2}>
-                        Đẹp trai thấy sai sai
-                    </Text>
-                    <Text className="text-white text-[14px] font-normal ">TD Phan</Text>
-                    <Text className="text-white text-[14px] font-normal mt-2">16:10 | CN, 18/08</Text>
-                </View>
-            </View>
-            <View
-                className="flex-row items-center justify-center h-28 rounded-xl px-4"
-                style={{ width: width * 0.9, backgroundColor: colors.backgroundColor }}
-            >
-                <Image source={phim1} className="h-20 w-16 rounded" resizeMode="contain" />
-                <View className="flex-1 ml-3">
-                    <Text className="text-white text-base font-bold truncate" ellipsizeMode="tail" numberOfLines={2}>
-                        Đẹp trai thấy sai sai
-                    </Text>
-                    <Text className="text-white text-[14px] font-normal ">TD Phan</Text>
-                    <Text className="text-white text-[14px] font-normal mt-2">16:10 | CN, 18/08</Text>
-                </View>
-            </View>
-            <View
-                className="flex-row items-center justify-center h-28 rounded-xl px-4"
-                style={{ width: width * 0.9, backgroundColor: colors.backgroundColor }}
-            >
-                <Image source={phim1} className="h-20 w-16 rounded" resizeMode="contain" />
-                <View className="flex-1 ml-3">
-                    <Text className="text-white text-base font-bold truncate" ellipsizeMode="tail" numberOfLines={2}>
-                        Đẹp trai thấy sai sai
-                    </Text>
-                    <Text className="text-white text-[14px] font-normal ">TD Phan</Text>
-                    <Text className="text-white text-[14px] font-normal mt-2">16:10 | CN, 18/08</Text>
-                </View>
-            </View>
-            <View
-                className="flex-row items-center justify-center h-28 rounded-xl px-4"
-                style={{ width: width * 0.9, backgroundColor: colors.backgroundColor }}
-            >
-                <Image source={phim1} className="h-20 w-16 rounded" resizeMode="contain" />
-                <View className="flex-1 ml-3">
-                    <Text className="text-white text-base font-bold truncate" ellipsizeMode="tail" numberOfLines={2}>
-                        Đẹp trai thấy sai sai
-                    </Text>
-                    <Text className="text-white text-[14px] font-normal ">TD Phan</Text>
-                    <Text className="text-white text-[14px] font-normal mt-2">16:10 | CN, 18/08</Text>
-                </View>
-            </View>
-            <View
-                className="flex-row items-center justify-center h-28 rounded-xl px-4"
-                style={{ width: width * 0.9, backgroundColor: colors.backgroundColor }}
-            >
-                <Image source={phim1} className="h-20 w-16 rounded" resizeMode="contain" />
-                <View className="flex-1 ml-3">
-                    <Text className="text-white text-base font-bold truncate" ellipsizeMode="tail" numberOfLines={2}>
-                        Đẹp trai thấy sai sai
-                    </Text>
-                    <Text className="text-white text-[14px] font-normal ">TD Phan</Text>
-                    <Text className="text-white text-[14px] font-normal mt-2">16:10 | CN, 18/08</Text>
-                </View>
-            </View>
-            <View
-                className="flex-row items-center justify-center h-28 rounded-xl px-4"
-                style={{ width: width * 0.9, backgroundColor: colors.backgroundColor }}
-            >
-                <Image source={phim1} className="h-20 w-16 rounded" resizeMode="contain" />
-                <View className="flex-1 ml-3">
-                    <Text className="text-white text-base font-bold truncate" ellipsizeMode="tail" numberOfLines={2}>
-                        Đẹp trai thấy sai sai
-                    </Text>
-                    <Text className="text-white text-[14px] font-normal ">TD Phan</Text>
-                    <Text className="text-white text-[14px] font-normal mt-2">16:10 | CN, 18/08</Text>
-                </View>
-            </View>
-        </View>
-    </ScrollView>
-);
+        </ScrollView>
+    );
+};
 
-const SecondRoute = () => (
-    <ScrollView style={{ flex: 1, marginBottom: 30 }} showsVerticalScrollIndicator={false}>
-        <View className="items-center my-6 space-y-3 py-2">
-            <View
-                className="flex-row items-center justify-center h-28 rounded-xl px-4"
-                style={{ width: width * 0.9, backgroundColor: colors.backgroundColor }}
-            >
-                <Image source={phim1} className="h-20 w-16 rounded" resizeMode="contain" />
-                <View className="flex-1 ml-3">
-                    <Text className="text-white text-base font-bold truncate" ellipsizeMode="tail" numberOfLines={2}>
-                        Đẹp trai thấy sai sai
-                    </Text>
-                    <Text className="text-white text-[14px] font-normal ">TD Phan</Text>
-                    <Text className="text-white text-[14px] font-normal mt-2">16:10 | CN, 18/08</Text>
+const SecondRoute = () => {
+    console.log('Rendering Second Route');
+    return (
+        <ScrollView style={{ flex: 1, marginBottom: 30 }} showsVerticalScrollIndicator={false}>
+            <View className="items-center my-6 space-y-3 py-2">
+                <View
+                    className="flex-row items-center justify-center h-28 rounded-xl px-4"
+                    style={{ width: width * 0.9, backgroundColor: colors.backgroundColor }}
+                >
+                    <Image source={phim1} className="h-20 w-16 rounded" resizeMode="contain" />
+                    <View className="flex-1 ml-3">
+                        <Text
+                            className="text-white text-base font-bold truncate"
+                            ellipsizeMode="tail"
+                            numberOfLines={2}
+                        >
+                            Đẹp trai thấy sai sai
+                        </Text>
+                        <Text className="text-white text-[14px] font-normal ">TD Phan</Text>
+                        <Text className="text-white text-[14px] font-normal mt-2">16:10 | CN, 18/08</Text>
+                    </View>
                 </View>
             </View>
-        </View>
-    </ScrollView>
-);
-
+        </ScrollView>
+    );
+};
 const renderScene = SceneMap({
     first: FirstRoute,
     second: SecondRoute,
