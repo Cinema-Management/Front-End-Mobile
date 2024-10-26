@@ -1,10 +1,8 @@
 import React, { useState } from 'react';
 import { View, Text, Image, ScrollView, StyleSheet } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import phim1 from '../../assets/phim1.png';
 import { AntDesign, FontAwesome6, Fontisto, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import { Button, List, ProgressBar } from 'react-native-paper';
-import { color } from 'react-native-elements/dist/helpers';
 import { TouchableOpacity } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import Container from '../components/Container';
@@ -12,6 +10,7 @@ import Avatar from '../components/Avatar';
 import { colors } from '../constants/colors';
 import ButtonComponent from '../components/ButtonComponent';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
+import ButtonPrimary from '../components/ButtonPrimary';
 const TaiKhoan = ({ navigation }) => {
     const maxValue = 5000000;
 
@@ -28,9 +27,9 @@ const TaiKhoan = ({ navigation }) => {
     };
     return (
         <Container isScroll={false} title="Tài khoản" style={{ color: 'white', fontWeight: 700 }}>
-            <View style={{ height: hp(80) }}>
-                <ScrollView style={{ height: hp(40) }} showsVerticalScrollIndicator={false}>
-                    <View className="flex-row py-2 px-3" style={{ backgroundColor: colors.backgroundColor }}>
+            <View style={styles.main}>
+                <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
+                    <View className="flex-row py-1 px-3" style={{ backgroundColor: colors.backgroundColor }}>
                         <Avatar photoUrl={phim1} size={70} bordered={true} />
                         <View className=" justify-center ml-5 flex-1">
                             <View className=" flex-row">
@@ -44,16 +43,21 @@ const TaiKhoan = ({ navigation }) => {
                         </View>
                     </View>
                     <View
-                        className="mt-2 py-3 justify-center items-center flex-row px-3"
+                        className="mt-2 py-3 justify-center items-center  flex-row px-3"
                         style={{ backgroundColor: colors.backgroundColor }}
                     >
-                        <TouchableOpacity className=" flex-row" onPress={() => navigation.navigate('Register')}>
+                        <TouchableOpacity
+                            className=" h-full justify-center items-center flex-row"
+                            style={{ width: wp(40) }}
+                            onPress={() => navigation.navigate('UpdateInfo')}
+                        >
                             <FontAwesome6 name="edit" size={24} color="orange" />
                             <Text className="text-gray-200 text-base font-normal ml-1">Thông tin</Text>
                         </TouchableOpacity>
+
                         <View className="w-0.5 h-9 bg-white mx-5" />
 
-                        <View className="flex-row">
+                        <View className="flex-row" style={{ width: wp(40) }}>
                             <Fontisto name="bell" size={24} color="orange" />
                             <Text className="text-white text-base font-normal ml-1">Thông báo</Text>
                         </View>
@@ -104,7 +108,7 @@ const TaiKhoan = ({ navigation }) => {
                     </View>
 
                     <View style={{ marginTop: 8, backgroundColor: colors.backgroundColor }}>
-                        <View className=" pb-3 h-auto px-2">
+                        <View className=" pb-2 h-auto px-2">
                             <View className="mt-2 py-5  border-b border-white justify-between flex-row px-3">
                                 <View className="flex-row">
                                     <MaterialCommunityIcons name="chat-alert-outline" size={24} color="white" />
@@ -112,6 +116,7 @@ const TaiKhoan = ({ navigation }) => {
                                 </View>
                                 <MaterialIcons name="navigate-next" size={24} color="white" />
                             </View>
+
                             <View className="py-5  border-b border-white justify-between flex-row px-3">
                                 <View className="flex-row">
                                     <MaterialIcons name="menu-book" size={24} color="white" />
@@ -128,32 +133,14 @@ const TaiKhoan = ({ navigation }) => {
                             </View>
                         </View>
                     </View>
+                    <View className=" mt-6 mb-6 flex-row justify-between w-full items-center">
+                        <View className="px-4 py-2justify-between w-full items-center">
+                            <TouchableOpacity>
+                                <Text className="text-white text-base font-bold">Đăng xuất</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
                 </ScrollView>
-                <View
-                    style={{
-                        width: wp(90),
-                        justifyContent: 'center',
-                        margin: 'auto',
-                        height: hp(10),
-                    }}
-                >
-                    <TouchableOpacity className="py-3">
-                        <LinearGradient
-                            colors={['#ED999A', '#F6D365']}
-                            style={styles.gradient}
-                            start={{ x: 0.4, y: 0.1 }}
-                            end={{ x: 0.9, y: 0.2 }}
-                            className="absolute rounded-lg"
-                        />
-                        <Text
-                            style={styles.buttonText}
-                            className="text-center text-[18px] 
-                                    font-medium text-black leading-5 "
-                        >
-                            Đăng xuất
-                        </Text>
-                    </TouchableOpacity>
-                </View>
             </View>
         </Container>
     );
@@ -171,6 +158,10 @@ const styles = StyleSheet.create({
         marginTop: 10,
         fontSize: 14,
     },
+    main: {
+        height: hp(80),
+    },
+
     counter: {
         position: 'relative',
         bottom: 30,

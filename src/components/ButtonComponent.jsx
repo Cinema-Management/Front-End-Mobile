@@ -7,7 +7,7 @@ import TextComponent from './TextComponent';
 import { colors } from '../constants/colors';
 
 const ButtonComponent = (props) => {
-    const { styles, text, icon, onPress, color, type, textStyles } = props;
+    const { styles, text, icon, onPress, color, type, textStyles, styleBack } = props;
 
     return !type || type === 'primary' ? (
         <TouchableOpacity
@@ -24,7 +24,9 @@ const ButtonComponent = (props) => {
             {text && <TextComponent text={text} color={color ? colors.white : '#212121'} styles={textStyles} />}
         </TouchableOpacity>
     ) : type === 'link' || type === 'text' ? (
-        <TouchableOpacity>{icon}</TouchableOpacity>
+        <TouchableOpacity onPress={onPress} style={styleBack}>
+            {icon}
+        </TouchableOpacity>
     ) : (
         <></>
     );
