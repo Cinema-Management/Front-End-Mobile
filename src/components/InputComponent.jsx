@@ -21,11 +21,12 @@ const InputComponent = (props) => {
         showPass,
         setShowPass,
         onEnd,
+        placeholderColor,
     } = props;
 
     return (
-        <View style={{ marginBottom: 16 }}>
-            {title && <TextComponent text={title} />}
+        <View style={{ marginBottom: 30 }}>
+            {title && <TextComponent styles={{ color: 'white' }} text={title} />}
             <View
                 style={[
                     {
@@ -49,7 +50,8 @@ const InputComponent = (props) => {
                         {
                             color: '#212121',
                             flex: 1,
-                            fontSize: 14,
+                            fontSize: 16,
+                            lineHeight: 20,
                             paddingHorizontal: prefix || affix ? 10 : 0,
                         },
                         inputStyles,
@@ -57,16 +59,17 @@ const InputComponent = (props) => {
                     keyboardType={type ?? 'default'}
                     secureTextEntry={password ? !showPass : false}
                     onEndEditing={onEnd}
+                    placeholderTextColor={placeholderColor}
                 />
                 {affix && affix}
                 {allowClear && value && (
-                    <TouchableOpacity onPress={() => onChange('')}>
-                        <AntDesign name="close" size={18} color={'#212121'} />
+                    <TouchableOpacity onPress={() => onChange('')} style={{ marginRight: 5 }}>
+                        <AntDesign name="close" size={18} color="white" />
                     </TouchableOpacity>
                 )}
                 {password && (
                     <TouchableOpacity onPress={setShowPass}>
-                        <Ionicons name={showPass ? 'eye-off-outline' : 'eye-outline'} size={20} color={'#676767'} />
+                        <Ionicons name={showPass ? 'eye-off-outline' : 'eye-outline'} size={20} color="white" />
                     </TouchableOpacity>
                 )}
             </View>
