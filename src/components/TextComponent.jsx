@@ -11,7 +11,7 @@ const TextComponent = (props) => {
                 globalStyles.text,
                 {
                     color: color ?? '#212121',
-                    fontSize: size ?? 14,
+                    fontSize: size ?? 16,
                     lineHeight: height ? height : size ? size + 6 : 19,
                     fontWeight: weight ?? 'normal',
                 },
