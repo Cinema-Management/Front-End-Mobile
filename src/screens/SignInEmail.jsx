@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import {
     StyleSheet,
     Platform,
@@ -11,143 +11,235 @@ import {
     Image,
     TextInput,
     KeyboardAvoidingView,
+    Keyboard,
 } from 'react-native';
-import image1 from '../../assets/img1.png';
+import { API_URL } from '@env';
 import logo from '../../assets/logo.png';
-import user from '../../assets/user.png';
-import lock from '../../assets/lock.png';
-import eye from '../../assets/eye.png';
 import { LinearGradient } from 'expo-linear-gradient';
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import Checkbox from 'expo-checkbox';
-import { Icon } from 'react-native-elements';
-
+import Container from '../components/Container';
+import { AntDesign, FontAwesome, Ionicons } from '@expo/vector-icons';
+import Toast from 'react-native-toast-message';
+import { useDispatch } from 'react-redux';
+import axios from 'axios';
+import { loginUser } from '../redux/apiRequest';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 export default function SignInEmail({ navigation }) {
     var { height, width } = Dimensions.get('window');
     const [isSelected, setSelection] = useState(false);
+
+    const phoneRef = useRef('');
+    const passWord = useRef('');
+    const [showPass, setShowPass] = useState(false);
+    const toggleShowPass = () => {
+        setShowPass(!showPass);
+    };
+    const dispatch = useDispatch();
+
+    const handleChangeSDT = (text) => {
+        phoneRef.current = text;
+    };
+    const handleChangePass = (text) => {
+        passWord.current = text;
+    };
+    useEffect(() => {
+        const loadCredentials = async () => {
+            try {
+                const storedPhone = await AsyncStorage.getItem('phone');
+                const storedPassword = await AsyncStorage.getItem('password');
+
+                if (storedPhone && storedPassword) {
+                    phoneRef.current = storedPhone;
+                    passWord.current = storedPassword;
+                    setSelection(true);
+                }
+            } catch (e) {
+                console.error('Failed to load credentials', e);
+            }
+        };
+
+        loadCredentials();
+    }, []);
+    const handleLogin = async () => {
+        try {
+            const newUser = {
+                phone: phoneRef.current,
+                password: passWord.current,
+                type: 0,
+            };
+
+            const response = await axios.post(`${API_URL}/api/users/checkUserStatusByPhone`, newUser);
+            const status = response.data;
+
+            if (status) {
+                if (status === 2) {
+                    Toast.show({
+                        type: 'error',
+                        text1: 'Lỗi',
+                        text2: 'Tài khoản này đã ngưng hoạt động!',
+                    });
+                    return;
+                }
+            } else {
+                Toast.show({
+                    type: 'error',
+                    text1: 'Lỗi',
+                    text2: 'Số điện thoại hoặc mật khẩu không chính !',
+                });
+                return;
+            }
+
+            const error = await loginUser(newUser, dispatch);
+            if (error) {
+                Toast.show({
+                    type: 'error',
+                    text1: 'Lỗi',
+                    text2: 'Số điện thoại hoặc mật khẩu không chính xác!',
+                });
+                return;
+            } else {
+                if (isSelected) {
+                    await AsyncStorage.setItem('phone', phoneRef.current);
+                    await AsyncStorage.setItem('password', passWord.current);
+                }
+
+                Toast.show({
+                    type: 'success',
+                    text1: 'Thành công',
+                    text2: 'Đăng nhập thành công!',
+                });
+            }
+        } catch (e) {
+            Toast.show({
+                type: 'error',
+                text1: 'Lỗi',
+                text2: 'Tài khoản hoặc mật khẩu không chính xác!',
+            });
+        }
+    };
+
+    console.log('phoneRef', phoneRef.current);
+    console.log('passWord', passWord.current);
     return (
-        <ImageBackground source={image1} className="flex-1 " style={{ width, height }}>
-            <LinearGradient
-                colors={['transparent', 'rgba(23,23,23,0.9)', 'rgba(23,23,23,0.97)']}
-                style={{ width, height }}
-                start={{ x: 10, y: 0 }}
-                end={{ x: 0, y: 0 }}
-                className="absolute "
-            />
-            <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
-                <View className="flex-2 h-2/4 justify-center items-center  ">
-                    <Image source={logo} />
+        <Container
+            home={true}
+            // back={true}
+            isScroll={false}
+            title="Đăng nhập"
+            style={{ color: 'white', fontWeight: 700, fontSize: 18, textTransform: 'uppercase' }}
+        >
+            <ScrollView
+                keyboardShouldPersistTaps="handled"
+                showsHorizontalScrollIndicator={false}
+                showsVerticalScrollIndicator={false}
+                scrollEnabled={false}
+            >
+                <View className="h-2/4 justify-center items-center mb-3  " style={{ height: hp(30) }}>
+                    <Image source={logo} style={{ width: wp(55) }} resizeMode="contain" />
                 </View>
-                <View className="flex-2 h-2/4 px-6 pb-10 gap-3 ">
-                    <View className="h-[150px] ">
-                        <View className="gap-1 mb-2 h-1/2">
+
+                <View className="flex-1 items-center ">
+                    <View style={{ height: hp(23), width: wp(90) }}>
+                        <View className="gap-[5px] mb-2 h-1/3">
                             <View className="flex-row  items-center px-4 rounded-[20px] border-white border-[1px] ">
-                                <Image source={user} className="mr-6" />
+                                <FontAwesome name="user-o" size={15} color="white" />
                                 <TextInput
-                                    placeholder="Số điện thoại hoặc email"
+                                    placeholder="Số điện thoại"
                                     placeholderTextColor="white"
-                                    className="text-[15px] leading-5 font-bold w-64 h-[50px] text-white"
+                                    defaultValue={phoneRef.current}
+                                    onChangeText={handleChangeSDT}
+                                    keyboardType="phone-pad"
+                                    className="text-[15px] ml-3 font-bold w-64 h-[45px] text-white"
                                 />
                             </View>
-                            <Text className="text-red-600 m-[-10px] pl-5 text-xs">Sai số điện thoại</Text>
                         </View>
 
-                        <View className="gap-1 mb-3 h-1/2">
+                        <View className="gap-[5px] mb-3 h-1/3">
                             <View className="flex-row  items-center px-4 rounded-[20px] border-white border-[1px] ">
-                                <Image source={lock} className="mr-6" />
+                                <AntDesign name="lock" size={15} color="white" />
                                 <TextInput
                                     placeholder="Mật khẩu"
                                     placeholderTextColor="white"
-                                    secureTextEntry={true}
-                                    className="text-[15px] leading-5 font-bold w-56 h-[50px] text-white "
+                                    defaultValue={passWord.current}
+                                    onChangeText={handleChangePass}
+                                    secureTextEntry={passWord ? !showPass : false}
+                                    className="text-[15px] ml-3 font-bold w-64 h-[45px] text-white"
                                 />
-                                <TouchableOpacity>
-                                    <Image source={eye} className="ml-3" />
+                                <TouchableOpacity onPress={toggleShowPass}>
+                                    <Ionicons
+                                        name={showPass ? 'eye-off-outline' : 'eye-outline'}
+                                        size={20}
+                                        color="white"
+                                    />
                                 </TouchableOpacity>
                             </View>
-                            <Text className="text-red-600 m-[-10px]  pl-5 text-xs">Sai số điện thoại</Text>
+                        </View>
+                        <View className="flex-row wh-1/3 justify-between items-center  ">
+                            <View className="flex-row items-center ">
+                                <Checkbox
+                                    value={isSelected}
+                                    onValueChange={setSelection}
+                                    color={isSelected ? 'orange' : undefined}
+                                    style={styles.checkbox}
+                                />
+
+                                <Text className="text-white text-[15px] font-normal ml-2">Lưu mật khẩu</Text>
+                            </View>
+
+                            <TouchableOpacity>
+                                <Text className="text-[#EC870E] text-[15px] font-bold">Quên mật khẩu?</Text>
+                            </TouchableOpacity>
                         </View>
                     </View>
-
-                    <View className="flex-row justify-between items-center  ">
-                        <View className="flex-row items-center ">
-                            <Checkbox value={isSelected} onValueChange={setSelection} />
-                            <Text className="text-white text-sm font-normal ml-2">Lưu mật khẩu</Text>
-                        </View>
-
-                        <TouchableOpacity>
-                            <Text className="text-[#EC870E] text-sm font-bold">Quên mật khẩu?</Text>
-                        </TouchableOpacity>
-                    </View>
-
-                    <View className="flex-row items-center">
-                        <View className="flex-1 border-dashed border-[1px] border-[#62656A] " />
-                        <Text className="mx-4 text-sm font-bold text-white">hoặc</Text>
-                        <View className="flex-1 border-dashed border-[1px] border-[#62656A]" />
-                    </View>
-
-                    <TouchableOpacity className="px-6 py-3 " onPress={() => navigation.navigate('SignInHome')}>
-                        <LinearGradient
-                            colors={['#ED999A', '#F6D365']}
-                            style={styles.gradient}
-                            start={{ x: 0.4, y: 0.1 }}
-                            end={{ x: 0.9, y: 0.2 }}
-                            className="absolute rounded-lg"
-                        />
-                        <Text
-                            style={styles.buttonText}
-                            className="text-center text-[18px] 
-                  font-medium text-neutral-900 leading-5"
-                        >
-                            Đăng nhập{' '}
-                        </Text>
-                    </TouchableOpacity>
-
-                    <View className="flex-row  justify-center ">
-                        <TouchableOpacity className="bg-[#2f2f2f] p-4 rounded-xl mr-3">
-                            <Icon
-                                name="facebook"
-                                type="font-awesome"
-                                size={18}
-                                color="white"
-                                className="bg-[#3399FF] rounded-2xl px-2 py-1"
+                    <View className=" mt-10 justify-center" style={{ height: hp(25), width: wp(80) }}>
+                        <TouchableOpacity className="justify-center items-center" onPress={() => handleLogin()}>
+                            <LinearGradient
+                                colors={['#ED999A', '#F6D365']}
+                                style={styles.gradientButton}
+                                start={{ x: 0.4, y: 0.1 }}
+                                end={{ x: 0.5, y: 1 }}
+                                className="absolute rounded-lg"
                             />
-                        </TouchableOpacity>
-                        <TouchableOpacity className="bg-[#2f2f2f] p-4 rounded-xl mr-3">
-                            <Icon
-                                name="google"
-                                type="font-awesome"
-                                size={18}
-                                color="white"
-                                className=" rounded-2xl px-2 py-1"
-                            />
-                        </TouchableOpacity>
-                        <TouchableOpacity className="bg-[#2f2f2f] p-4 rounded-xl">
-                            <Icon
-                                name="apple"
-                                type="font-awesome"
-                                size={18}
-                                color="#999999"
-                                className="rounded-2xl px-2 py-1"
-                            />
-                        </TouchableOpacity>
-                    </View>
-
-                    <View className="items-center ">
-                        <Text className="text-sm text-white font-bold">
-                            Không có tài khoản?
-                            <Text className="text-[#F6D365] font-bold" onPress={() => navigation.navigate('Register')}>
-                                {' '}
-                                Đăng ký
+                            <Text
+                                style={styles.buttonText}
+                                className="text-center text-lg text-[18px] font-bold text-white"
+                            >
+                                Đăng nhập
                             </Text>
-                        </Text>
+                        </TouchableOpacity>
+
+                        <View className="items-center mt-5">
+                            <Text className="text-sm text-white font-bold">
+                                Không có tài khoản?
+                                <Text
+                                    className="text-[#F6D365] font-bold"
+                                    onPress={() => navigation.navigate('Register')}
+                                >
+                                    Đăng ký
+                                </Text>
+                            </Text>
+                        </View>
                     </View>
                 </View>
-            </KeyboardAvoidingView>
-        </ImageBackground>
+            </ScrollView>
+        </Container>
     );
 }
 const styles = StyleSheet.create({
     gradient: {
         ...StyleSheet.absoluteFillObject,
+    },
+    gradientButton: {
+        borderRadius: 25,
+        marginTop: 20,
+        width: wp(80),
+        height: 45,
+    },
+
+    checkbox: {
+        height: 23,
+        width: 23,
+        marginLeft: 10,
     },
 });

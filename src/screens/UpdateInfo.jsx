@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
     View,
     Text,
@@ -13,40 +13,60 @@ import {
     FlatList,
     Platform,
 } from 'react-native';
-import image1 from '../../assets/img1.png';
 import phim1 from '../../assets/phim1.png';
-import { LinearGradient } from 'expo-linear-gradient';
-import Ionicons from '@expo/vector-icons/Ionicons';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import DropDownPicker from 'react-native-dropdown-picker';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { AntDesign } from '@expo/vector-icons';
 import Container from '../components/Container';
 import { colors } from '../constants/colors';
 import { Dropdown } from 'react-native-element-dropdown';
-import { color } from 'react-native-elements/dist/helpers';
 import ButtonPrimary from '../components/ButtonPrimary';
+import { useSelector } from 'react-redux';
+import * as ImagePicker from 'expo-image-picker';
+
+import { all } from 'axios';
 var { height, width } = Dimensions.get('window');
 
 export default function UpdateInfo({ navigation }) {
-    const [open1, setOpen1] = useState(false);
-    const [value1, setValue1] = useState(null);
-    const [open2, setOpen2] = useState(false);
-    const [value2, setValue2] = useState(null);
-    const [open3, setOpen3] = useState(false);
-    const [value3, setValue3] = useState(null);
-    const [open4, setOpen4] = useState(false);
-    const [value4, setValue4] = useState(null);
+    const currentUser = useSelector((state) => state.auth.login.currentUser);
     const items = [
         { label: 'Nam', value: '1' },
         { label: 'Nữ', value: '2' },
     ];
+    const phoneRef = useRef();
+    const gender = currentUser.gender === 'Nam' ? '1' : '2';
+    const [selectedGender, setSelectedGender] = useState(gender);
+    const [selectedValue, setSelectedValue] = useState('');
+    const emailRef = useRef();
 
-    const [selectedValue, setSelectedValue] = useState(null);
-    const handlePress = () => {
-        console.log('Button pressed!');
+    const [image, setImage] = useState(null);
+
+    const handleImagePicker = async () => {
+        // Yêu cầu quyền truy cập thư viện ảnh
+        const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+        if (status !== 'granted') {
+            alert('Xin vui lòng cấp quyền truy cập thư viện ảnh!');
+            return;
+        }
+
+        let result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            allowsEditing: true,
+            aspect: [16, 9],
+            quality: 1,
+        });
+
+        if (!result.canceled) {
+            const selectedImageUri = result.assets[0].uri;
+            setImage(selectedImageUri);
+            console.log(selectedImageUri);
+        } else {
+            console.log('Người dùng đã hủy chọn hình ảnh.');
+        }
     };
+
+    console.log(image);
+
     const items1 = [
         { value: '1', label: 'TP Hồ Chí Minh' },
         { value: '2', label: 'TP Đà Nẵng' },
@@ -58,7 +78,7 @@ export default function UpdateInfo({ navigation }) {
         { value: '8', label: 'Phú Yên' },
     ];
     const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
-    const [selectedDate, setSelectedDate] = useState(null);
+    const [selectedDate, setSelectedDate] = useState(new Date(currentUser.birthDate));
     const showDatePicker = () => {
         setDatePickerVisibility(true);
     };
@@ -71,6 +91,7 @@ export default function UpdateInfo({ navigation }) {
         setSelectedDate(date);
         hideDatePicker();
     };
+
     return (
         <Container isScroll={false} title="Thông tin tài khoản" back={true} style={{ color: 'white', fontWeight: 700 }}>
             <View style={styles.main}>
@@ -79,28 +100,23 @@ export default function UpdateInfo({ navigation }) {
                     style={{ flex: 1 }}
                     keyboardVerticalOffset={Platform.OS === 'ios' ? 130 : 130}
                 >
-                    <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
+                    <ScrollView
+                        style={{ flex: 1 }}
+                        showsVerticalScrollIndicator={false}
+                        contentContainerStyle={{ paddingBottom: hp(8) }}
+                    >
                         <View style={{ height: hp(10) }} className="justify-center items-center  py-2 relative">
                             <View style={{ position: 'relative' }}>
                                 <Image
-                                    source={phim1}
+                                    source={{ uri: image ? image : currentUser.avatar }}
                                     style={{
                                         width: hp(10),
                                         height: hp(10),
                                         borderRadius: 50,
-                                        objectFit: 'cover',
                                     }}
+                                    resizeMode="cover"
                                 />
-                                <TouchableOpacity
-                                    style={{
-                                        position: 'absolute',
-                                        backgroundColor: 'orange',
-                                        bottom: 0,
-                                        right: 0,
-                                        padding: 5,
-                                        borderRadius: 50,
-                                    }}
-                                >
+                                <TouchableOpacity style={styles.btnImage} onPress={handleImagePicker}>
                                     <AntDesign name="camerao" size={24} color="white" />
                                 </TouchableOpacity>
                             </View>
@@ -109,7 +125,7 @@ export default function UpdateInfo({ navigation }) {
                             <View style={{ height: hp(10) }} className="mb-9">
                                 <Text className="text-white text-lg px-4  font-bold">Tài khoản của tôi là:</Text>
 
-                                <Text style={styles.text}>caotrungduong11@gmail.com</Text>
+                                <Text style={styles.text}>{currentUser.phone}</Text>
                             </View>
                             <View style={{ height: hp(30) }}>
                                 <Text className="text-white text-lg px-4 font-bold mb-4">Thông tin cá nhân:</Text>
@@ -123,8 +139,10 @@ export default function UpdateInfo({ navigation }) {
                                         </Text>
                                         <TextInput
                                             style={styles.textInput}
-                                            placeholder="Cao Trùng Dương"
+                                            placeholder="Nhập họ và tên"
+                                            defaultValue={currentUser.name}
                                             placeholderTextColor="white"
+                                            onChangeText={(text) => (phoneRef.current = text)}
                                             underlineColorAndroid="transparent"
                                         />
                                     </View>
@@ -191,9 +209,9 @@ export default function UpdateInfo({ navigation }) {
                                                 valueField="value"
                                                 maxHeight={100}
                                                 placeholder="Chọn"
-                                                value={selectedValue}
+                                                value={selectedGender}
                                                 onChange={(item) => {
-                                                    setSelectedValue(item.value);
+                                                    setSelectedGender(item.value);
                                                 }}
                                                 style={{
                                                     backgroundColor: 'transparent',
@@ -247,7 +265,7 @@ export default function UpdateInfo({ navigation }) {
                             <View style={{ flex: 1 }}>
                                 <Text className="text-white text-lg px-4 font-bold mb-4">Liên hệ:</Text>
                                 <View style={{ backgroundColor: colors.backgroundColor }}>
-                                    <View className="flex-row px-4 py-[5px] justify-between items-center border-b border-[#8e8d8d]">
+                                    <View className="flex-row px-4 py-[5px]  justify-between items-center border-b border-[#8e8d8d]">
                                         <Text
                                             className="text-base text-white h-full "
                                             style={{ width: wp(25), height: hp(5), lineHeight: hp(5) }}
@@ -256,10 +274,11 @@ export default function UpdateInfo({ navigation }) {
                                         </Text>
                                         <TextInput
                                             style={styles.textInput}
-                                            placeholder="caotrungduong11@gmail.com"
+                                            defaultValue={currentUser.email}
+                                            onChangeText={(text) => (emailRef.current = text)}
+                                            placeholder="Nhập email"
                                             placeholderTextColor="white"
                                             underlineColorAndroid="transparent"
-                                            ellipsizeMode="tail"
                                         />
                                     </View>
                                     <View className="flex-row px-4 py-[5px] justify-between items-center border-b border-[#8e8d8d]">
@@ -508,26 +527,24 @@ export default function UpdateInfo({ navigation }) {
                 </KeyboardAvoidingView>
             </View>
 
-            <View>
-                <View style={styles.footer}>
-                    <ButtonPrimary title="Cập nhật" />
-                </View>
-            </View>
+            <ButtonPrimary
+                title="Cập nhật"
+                //  onPress={() => navigation.navigate('Phim')}
+            />
         </Container>
     );
 }
 const styles = StyleSheet.create({
     main: {
-        width: wp(100),
-        height: height * 0.75,
+        flex: 1,
     },
-    footer: {
-        marginTop: 10,
-        height: height * 0.1,
-        width: wp(100),
-        justifyContent: 'center',
-        alignItems: 'center',
-        margin: 'auto',
+    btnImage: {
+        position: 'absolute',
+        backgroundColor: 'orange',
+        bottom: 0,
+        right: 0,
+        padding: 5,
+        borderRadius: 50,
     },
     text: {
         height: hp(6),

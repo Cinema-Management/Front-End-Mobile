@@ -10,31 +10,34 @@ import Avatar from '../components/Avatar';
 import { colors } from '../constants/colors';
 import ButtonComponent from '../components/ButtonComponent';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
-import ButtonPrimary from '../components/ButtonPrimary';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useDispatch, useSelector } from 'react-redux';
+import { logOutSuccess, removeAuth } from '../redux/authSlice';
+import { logOut } from '../redux/apiRequest';
+import { createAxios } from '../createInstance';
 const TaiKhoan = ({ navigation }) => {
+    const dispatch = useDispatch();
     const maxValue = 5000000;
-
+    const user = useSelector((state) => state.auth.login?.currentUser);
+    const axiosJWT = createAxios(user, dispatch, logOutSuccess);
     const [currentExpense, setCurrentExpense] = useState(2000000);
     const progress = Math.min(currentExpense / maxValue, 1);
     const [expandedAccordions, setExpandedAccordions] = useState([]);
-
-    const handlePress = (id) => {
-        if (expandedAccordions.includes(id)) {
-            setExpandedAccordions(expandedAccordions.filter((item) => item !== id));
-        } else {
-            setExpandedAccordions([...expandedAccordions, id]);
-        }
-    };
+    const currentUser = useSelector((state) => state.auth.login.currentUser);
     return (
         <Container isScroll={false} title="Tài khoản" style={{ color: 'white', fontWeight: 700 }}>
             <View style={styles.main}>
-                <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
+                <ScrollView
+                    style={{ flex: 1 }}
+                    showsVerticalScrollIndicator={false}
+                    contentContainerStyle={{ flexGrow: 1, paddingBottom: hp(10) }}
+                >
                     <View className="flex-row py-1 px-3" style={{ backgroundColor: colors.backgroundColor }}>
-                        <Avatar photoUrl={phim1} size={70} bordered={true} />
+                        <Avatar photoUrl={{ uri: currentUser.avatar }} size={70} bordered={true} />
                         <View className=" justify-center ml-5 flex-1">
                             <View className=" flex-row">
                                 <MaterialIcons name="workspace-premium" size={20} color="orange" />
-                                <Text className="text-white text-base font-normal ml-2">Cao Trùng Dương</Text>
+                                <Text className="text-white text-base font-normal ml-2">{currentUser.name}</Text>
                             </View>
                             <View className=" flex-row mt-2">
                                 <AntDesign name="gift" size={20} color="orange" />
@@ -57,10 +60,14 @@ const TaiKhoan = ({ navigation }) => {
 
                         <View className="w-0.5 h-9 bg-white mx-5" />
 
-                        <View className="flex-row" style={{ width: wp(40) }}>
+                        <TouchableOpacity
+                            className="flex-row"
+                            style={{ width: wp(40) }}
+                            onPress={() => navigation.navigate('Seat')}
+                        >
                             <Fontisto name="bell" size={24} color="orange" />
                             <Text className="text-white text-base font-normal ml-1">Thông báo</Text>
-                        </View>
+                        </TouchableOpacity>
                     </View>
                     <View
                         className=" mt-2 py-3 justify-center items-center h-auto px-2"
@@ -108,7 +115,7 @@ const TaiKhoan = ({ navigation }) => {
                     </View>
 
                     <View style={{ marginTop: 8, backgroundColor: colors.backgroundColor }}>
-                        <View className=" pb-2 h-auto px-2">
+                        <View className=" pb-2 h-auto ">
                             <View className="mt-2 py-5  border-b border-white justify-between flex-row px-3">
                                 <View className="flex-row">
                                     <MaterialCommunityIcons name="chat-alert-outline" size={24} color="white" />
@@ -124,6 +131,7 @@ const TaiKhoan = ({ navigation }) => {
                                 </View>
                                 <MaterialIcons name="navigate-next" size={24} color="white" />
                             </View>
+
                             <View className="py-5  border-b border-white justify-between flex-row px-3">
                                 <View className="flex-row">
                                     <MaterialIcons name="security" size={24} color="white" />
@@ -135,7 +143,7 @@ const TaiKhoan = ({ navigation }) => {
                     </View>
                     <View className=" mt-6 mb-6 flex-row justify-between w-full items-center">
                         <View className="px-4 py-2justify-between w-full items-center">
-                            <TouchableOpacity>
+                            <TouchableOpacity onPress={() => logOut(dispatch, user.accessToken, axiosJWT)}>
                                 <Text className="text-white text-base font-bold">Đăng xuất</Text>
                             </TouchableOpacity>
                         </View>
@@ -159,7 +167,7 @@ const styles = StyleSheet.create({
         fontSize: 14,
     },
     main: {
-        height: hp(80),
+        flex: 1,
     },
 
     counter: {

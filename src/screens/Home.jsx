@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useMemo, useState } from 'react';
+import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import {
     View,
     Text,
@@ -20,7 +20,6 @@ import useMovieSchedule from '../queries/useMovieSchedule';
 import { LinearGradient } from 'expo-linear-gradient';
 const { width, height } = Dimensions.get('window');
 const CarouselComponent = memo(({ index, data, navigation }) => {
-    // console.log('reder CarouselComponent ', index);
     const renderItem = useCallback(
         ({ item }) => (
             <TouchableWithoutFeedback onPress={() => navigation.navigate('MovieDetail', { item })}>
@@ -83,17 +82,34 @@ const CarouselComponent = memo(({ index, data, navigation }) => {
     );
 });
 
-export default function Home({ navigation }) {
+const Home = memo(({ navigation }) => {
     const [scheduleId, setScheduleId] = useState(1);
-    const { data, isLoading, isSuccess } = useMovieSchedule(scheduleId);
-    const [index, setIndex] = useState(0);
+    const { data, isLoading, isSuccess, refetch, isRefetching } = useMovieSchedule(scheduleId);
+    const [index, setIndex] = useState(1);
+    const layout = useWindowDimensions();
     const handleIndexChange = (newIndex) => {
-        if (scheduleId !== newIndex + 1) {
-            setScheduleId(newIndex + 1);
+        let newScheduleId;
+        switch (newIndex) {
+            case 0:
+                newScheduleId = 3;
+                break;
+            case 1:
+                newScheduleId = 1;
+                break;
+            case 2:
+                newScheduleId = 2;
+                break;
+            default:
+                newScheduleId = 1;
+        }
+        if (scheduleId !== newScheduleId) {
+            setScheduleId(newScheduleId);
         }
         setIndex(newIndex);
     };
-
+    const handleRefresh = async () => {
+        refetch();
+    };
     const banners = [
         { id: 1, img: require('../../assets/img1.png') },
         { id: 2, img: require('../../assets/img1.png') },
@@ -117,11 +133,18 @@ export default function Home({ navigation }) {
         [data],
     );
     const renderScene = ({ route }) => {
-        if (isLoading) {
+        if (isLoading || isRefetching) {
             return (
                 <View style={styles.loadingContainer}>
                     <ActivityIndicator size="large" color="white" />
                 </View>
+            );
+        }
+        if (!data || !data.length) {
+            return (
+                <Text style={{ color: 'white', textAlign: 'center', marginTop: 20, fontSize: 16 }}>
+                    Chưa có phim nào
+                </Text>
             );
         }
         if (isSuccess) {
@@ -169,10 +192,8 @@ export default function Home({ navigation }) {
         />
     );
 
-    const layout = useWindowDimensions();
-
     return (
-        <Container isScroll={false} style={{ color: 'white', fontWeight: 700 }}>
+        <Container isScroll={true} style={{ color: 'white', fontWeight: 700 }} onRefresh={handleRefresh}>
             <View style={{ height: hp(23.3) }}>
                 <BannerCarousel banners={banners} />
             </View>
@@ -192,7 +213,8 @@ export default function Home({ navigation }) {
             </View>
         </Container>
     );
-}
+});
+export default Home;
 
 const styles = StyleSheet.create({
     carouselContainer: {
