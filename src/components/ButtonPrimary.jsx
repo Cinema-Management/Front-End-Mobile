@@ -1,27 +1,51 @@
-import React from 'react';
-import { TouchableOpacity, Text, StyleSheet, View } from 'react-native';
+import React, { useState } from 'react';
+import { StyleSheet, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
-const ButtonPrimary = ({ onPress, title, style, colors = ['#ED999A', '#F1C46F'] }) => {
+import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
+import { Button } from 'react-native-elements';
+import { Text } from 'react-native';
+
+const ButtonPrimary = ({ onPress, title }) => {
+    const [isPressed, setIsPressed] = useState(false); // Trạng thái để theo dõi khi nút được nhấn
+
     return (
-        <TouchableOpacity onPress={onPress}>
-            <LinearGradient colors={colors} style={[styles.button, style]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}>
-                <Text style={styles.buttonText}>{title}</Text>
+        <View style={styles.container}>
+            <LinearGradient
+                colors={['#ED999A', '#F6D365']}
+                start={{ x: 0.4, y: 0.1 }}
+                end={{ x: 0.9, y: 0.2 }}
+                style={styles.gradient}
+            >
+                <Button
+                    title={title}
+                    buttonStyle={{
+                        backgroundColor: isPressed ? 'rgba(255, 255, 255, 0.2)' : 'transparent',
+                        borderRadius: 25,
+                    }}
+                    titleStyle={{
+                        fontWeight: 'bold',
+                        textTransform: 'capitalize',
+                    }}
+                    onPress={onPress}
+                    onPressIn={() => setIsPressed(true)}
+                    onPressOut={() => setIsPressed(false)}
+                />
             </LinearGradient>
-        </TouchableOpacity>
+        </View>
     );
 };
 
 const styles = StyleSheet.create({
-    button: {
-        paddingVertical: 12,
-        borderRadius: 10,
+    container: {
+        position: 'absolute',
+        bottom: 25,
+        left: 0,
+        right: 0,
+        alignItems: 'center',
     },
-    buttonText: {
-        textAlign: 'center',
-        fontSize: 18,
-        fontWeight: 'bold',
-        color: 'white',
+    gradient: {
+        borderRadius: 25,
+        padding: 2,
         width: wp(90),
     },
 });

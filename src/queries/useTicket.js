@@ -2,36 +2,31 @@ import { useQuery } from 'react-query';
 import axios from 'axios';
 import { API_URL } from '@env';
 
-const fetchMovieHome = async (status) => {
+const fetchTicketByCustomerCode = async (code) => {
     try {
-        console.log('URL-API1111sadasdas', API_URL);
-        const response = await axios.get(`${API_URL}/api/schedules/getAllMovieWithSchedules?status=${status}`);
+        console.log('Api111111', API_URL);
+        const response = await axios.get(`${API_URL}/api/sales-invoices/invoiceSaleByCustomerCode/${code}`);
         const data = response.data;
-
         return data;
     } catch (error) {
         if (error.response) {
-            console.error('Response error:', error.response.data);
             throw new Error(`Error: ${error.response.status} - ${error.response.data.message}`);
         } else if (error.request) {
-            console.error('Request error:', error.request);
             throw new Error('Error: No response received from server');
         } else {
-            console.error('Error:', error.message);
             throw new Error('Error: ' + error.message);
         }
     }
 };
 
-const useMovieSchedule = (status) => {
-    return useQuery(['movieSchedule', status], () => fetchMovieHome(status), {
-        enabled: !!status,
+const useTicket = (customerCode) => {
+    return useQuery(['TicketByCustomerCode', customerCode], () => fetchTicketByCustomerCode(customerCode), {
+        enabled: !!customerCode,
+        refetchOnWindowFocus: true,
         staleTime: 1000 * 60 * 7,
         cacheTime: 1000 * 60 * 10,
         refetchInterval: 1000 * 60 * 7,
-        refetchOnWindowFocus: false,
-        refetchOnReconnect: false,
     });
 };
 
-export default useMovieSchedule;
+export default useTicket;

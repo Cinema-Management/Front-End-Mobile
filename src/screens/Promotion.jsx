@@ -69,6 +69,7 @@ const renderTabBar = (props) => (
                     textTransform: 'none',
                     fontWeight: focused ? 600 : 400,
                     paddingHorizontal: 10,
+                    fontSize: 16,
                 }}
             >
                 {route.title}

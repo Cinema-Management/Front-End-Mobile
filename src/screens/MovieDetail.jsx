@@ -2,18 +2,13 @@ import React, { useState } from 'react';
 import { View, StyleSheet, Dimensions, Text, ScrollView, TouchableWithoutFeedback } from 'react-native';
 import Container from '../components/Container';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
-import phim1 from '../../assets/phim1.png';
 import { Image } from 'react-native';
 import { TouchableOpacity } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { AntDesign } from '@expo/vector-icons';
-import {
-    formatDate,
-    formatDuration,
-    handleChangAge,
-    handleChangAgeRequiment,
-    handleChangAgeRequirement,
-} from '../utils/Date';
+import { formatDate, formatDuration, handleChangAge, handleChangAgeRequirement } from '../utils/Date';
+import { Button } from 'react-native-elements';
+import ButtonPrimary from '../components/ButtonPrimary';
 export default function MovieDetail({ navigation, route }) {
     const { item } = route.params;
     const [expanded, setExpanded] = useState(false);
@@ -24,7 +19,7 @@ export default function MovieDetail({ navigation, route }) {
 
     return (
         <Container isScroll={false} back={true} title="Phim" style={{ color: 'white', fontWeight: 700 }}>
-            <ScrollView style={{ width: wp(100), flex: 1 }}>
+            <ScrollView>
                 <TouchableWithoutFeedback onPress={() => navigation.navigate('PlayYoutube', { videoUri: videoUri })}>
                     <View className="bg-red-200 relative">
                         <Image
@@ -71,6 +66,7 @@ export default function MovieDetail({ navigation, route }) {
                         )}
                     </Text>
                 </View>
+
                 <View style={{ borderWidth: 1, borderColor: 'rgba(255, 255, 255, 0.3)', marginTop: 8 }}></View>
                 <View className="px-2 py-2 ">
                     <View className="flex-row mb-1 ">
@@ -99,27 +95,8 @@ export default function MovieDetail({ navigation, route }) {
                     </View>
                 </View>
             </ScrollView>
-            <View
-                style={{
-                    width: wp(90),
-                    justifyContent: 'center',
-                    margin: 'auto',
-                    height: hp(10),
-                }}
-            >
-                <TouchableOpacity className="py-3" onPress={() => navigation.navigate('TaiKhoan')}>
-                    <LinearGradient
-                        colors={['#ED999A', '#F6D365']}
-                        style={styles.gradient}
-                        start={{ x: 0.4, y: 0.1 }}
-                        end={{ x: 0.9, y: 0.2 }}
-                        className="absolute rounded-lg"
-                    />
-                    <Text style={styles.buttonText} className="text-center text-[18px] text-black font-bold leading-5 ">
-                        Đặt vé
-                    </Text>
-                </TouchableOpacity>
-            </View>
+
+            <ButtonPrimary title="Đặt vé" onPress={() => navigation.navigate('Film', { item })} />
         </Container>
     );
 }

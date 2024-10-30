@@ -2,10 +2,12 @@ import { useQuery } from 'react-query';
 import axios from 'axios';
 import { API_URL } from '@env';
 
-const fetchMovieHome = async (status) => {
+const fetchScheduleByMovieAndDate = async (movieCode, date) => {
     try {
-        console.log('URL-API1111sadasdas', API_URL);
-        const response = await axios.get(`${API_URL}/api/schedules/getAllMovieWithSchedules?status=${status}`);
+        console.log('ApI', API_URL);
+        const response = await axios.get(
+            `${API_URL}/api/schedules/getSchedulesByDateAndMovie?movieCode=${movieCode}&date=${date}`,
+        );
         const data = response.data;
 
         return data;
@@ -23,9 +25,9 @@ const fetchMovieHome = async (status) => {
     }
 };
 
-const useMovieSchedule = (status) => {
-    return useQuery(['movieSchedule', status], () => fetchMovieHome(status), {
-        enabled: !!status,
+const useSchedule = (movieCode, date) => {
+    return useQuery(['scheduleByMovieAndDate', movieCode, date], () => fetchScheduleByMovieAndDate(movieCode, date), {
+        enabled: !!date,
         staleTime: 1000 * 60 * 7,
         cacheTime: 1000 * 60 * 10,
         refetchInterval: 1000 * 60 * 7,
@@ -34,4 +36,4 @@ const useMovieSchedule = (status) => {
     });
 };
 
-export default useMovieSchedule;
+export default useSchedule;
