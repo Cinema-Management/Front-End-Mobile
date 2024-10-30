@@ -1,15 +1,11 @@
-// src/queries/useSeatStatus.js
 import { useQuery } from 'react-query';
 import axios from 'axios';
-
 import { API_URL } from '@env';
 
-const fetchSeatByRoomCode = async (code) => {
+const fetchTicketByCustomerCode = async (code) => {
     try {
-        console.log('API_URL111111a', API_URL);
-        const response = await axios.get(
-            `${URL}/api/seat-status-in-schedules/getAllSeatsStatusInSchedule?scheduleCode=${code}`,
-        );
+        console.log('Api111111', API_URL);
+        const response = await axios.get(`${API_URL}/api/sales-invoices/invoiceSaleByCustomerCode/${code}`);
         const data = response.data;
         return data;
     } catch (error) {
@@ -23,9 +19,9 @@ const fetchSeatByRoomCode = async (code) => {
     }
 };
 
-const useSeatStatus = (scheduleCode) => {
-    return useQuery(['seatStatus', scheduleCode], () => fetchSeatByRoomCode(scheduleCode), {
-        enabled: !!scheduleCode, // Only run the query if scheduleCode is defined
+const useTicket = (customerCode) => {
+    return useQuery(['TicketByCustomerCode', customerCode], () => fetchTicketByCustomerCode(customerCode), {
+        enabled: !!customerCode,
         refetchOnWindowFocus: true,
         staleTime: 1000 * 60 * 7,
         cacheTime: 1000 * 60 * 10,
@@ -33,4 +29,4 @@ const useSeatStatus = (scheduleCode) => {
     });
 };
 
-export default useSeatStatus;
+export default useTicket;

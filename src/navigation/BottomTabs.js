@@ -7,6 +7,7 @@ import Promotion from '../screens/Promotion';
 import Ticket from '../screens/Ticket';
 import DeleteAccount from '../screens/DeleteAccount';
 import Review from '../screens/Review';
+import { Text } from 'react-native';
 const Tab = createBottomTabNavigator();
 
 const BottomTabs = ({ navigation }) => {
@@ -22,26 +23,49 @@ const BottomTabs = ({ navigation }) => {
                     borderTopWidth: 0,
                 },
                 tabBarActiveTintColor: 'white',
-                tabBarLabelStyle: {
-                    color: 'gray',
-                },
             }}
         >
             <Tab.Screen
                 name="Home"
                 component={Home}
                 options={{
-                    tabBarLabel: 'Trang chủ',
-                    tabBarIcon: ({ color, size }) => <AntDesign name="home" size={size} color={color} />,
+                    tabBarLabel: ({ focused }) => (
+                        <Text
+                            style={{
+                                color: focused ? 'white' : '#555555',
+                                fontSize: 14,
+                                fontWeight: focused ? 700 : null,
+                            }}
+                        >
+                            Trang chủ
+                        </Text>
+                    ),
+                    tabBarIcon: ({ focused }) => (
+                        <AntDesign name="home" size={22} color={focused ? 'white' : '#555555'} />
+                    ),
                 }}
             />
             <Tab.Screen
                 name="Ticket"
                 component={Ticket}
                 options={{
-                    tabBarLabel: 'Vé',
-                    tabBarIcon: ({ color, size }) => (
-                        <MaterialCommunityIcons name="ticket-confirmation-outline" size={size} color={color} />
+                    tabBarLabel: ({ focused }) => (
+                        <Text
+                            style={{
+                                color: focused ? 'white' : '#555555',
+                                fontSize: 14,
+                                fontWeight: focused ? 700 : null,
+                            }}
+                        >
+                            Vé
+                        </Text>
+                    ),
+                    tabBarIcon: ({ focused }) => (
+                        <MaterialCommunityIcons
+                            name="ticket-confirmation-outline"
+                            size={22}
+                            color={focused ? 'white' : '#555555'}
+                        />
                     ),
                 }}
             />
@@ -49,16 +73,40 @@ const BottomTabs = ({ navigation }) => {
                 name="KM"
                 component={Promotion}
                 options={{
-                    tabBarLabel: 'Khuyến mãi',
-                    tabBarIcon: ({ color, size }) => <AntDesign name="gift" size={size} color={color} />,
+                    tabBarLabel: ({ focused }) => (
+                        <Text
+                            style={{
+                                color: focused ? 'white' : '#555555',
+                                fontSize: 14,
+                                fontWeight: focused ? 700 : null,
+                            }}
+                        >
+                            Khuyến mãi
+                        </Text>
+                    ),
+                    tabBarIcon: ({ focused }) => (
+                        <AntDesign name="gift" size={22} color={focused ? 'white' : '#555555'} />
+                    ),
                 }}
             />
             <Tab.Screen
                 name="TK"
                 component={TaiKhoan}
                 options={{
-                    tabBarLabel: 'Tài khoản',
-                    tabBarIcon: ({ color, size }) => <AntDesign name="user" size={size} color={color} />,
+                    tabBarLabel: ({ focused }) => (
+                        <Text
+                            style={{
+                                color: focused ? 'white' : '#555555',
+                                fontSize: 14,
+                                fontWeight: focused ? 700 : null,
+                            }}
+                        >
+                            Tài khoản
+                        </Text>
+                    ),
+                    tabBarIcon: ({ focused }) => (
+                        <AntDesign name="user" size={22} color={focused ? 'white' : '#555555'} />
+                    ),
                 }}
             />
         </Tab.Navigator>
