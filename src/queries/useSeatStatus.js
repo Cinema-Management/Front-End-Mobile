@@ -8,7 +8,7 @@ const fetchSeatByRoomCode = async (code) => {
     try {
         console.log('API_URL111111a', API_URL);
         const response = await axios.get(
-            `${API_URL}/api/seat-status-in-schedules/getAllSeatsStatusInSchedule?scheduleCode=${code}`,
+            `${URL}/api/seat-status-in-schedules/getAllSeatsStatusInSchedule?scheduleCode=${code}`,
         );
         const data = response.data;
         return data;
