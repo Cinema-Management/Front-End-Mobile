@@ -1,17 +1,17 @@
-// src/queries/useSeatStatus.js
+// src/queries/useFood.js
 import { useQuery } from 'react-query';
 import axios from 'axios';
 
 import { API_URL } from '@env';
 
-const fetchSeatByRoomCode = async (code) => {
+const fetchFood = async (date) => {
     try {
-        // console.log('API_URL11', API_URL);
-        const response = await axios.get(
-            `${URL}/api/seat-status-in-schedules/getAllSeatsStatusInSchedule?scheduleCode=${code}`,
-        );
+        const URL = API_URL;
+        const response = await axios.get(`${URL}/api/prices/getAllPriceFood?date=${date}`);
         const data = response.data;
-        return data;
+        const comboItems = data.filter((item) => item.productName.toLowerCase().includes('combo'));
+
+        return comboItems;
     } catch (error) {
         if (error.response) {
             throw new Error(`Error: ${error.response.status} - ${error.response.data.message}`);
@@ -23,11 +23,11 @@ const fetchSeatByRoomCode = async (code) => {
     }
 };
 
-const useSeatStatus = (scheduleCode) => {
-    return useQuery(['seatStatus', scheduleCode], () => fetchSeatByRoomCode(scheduleCode), {
-        enabled: !!scheduleCode, // Only run the query if scheduleCode is defined
+const useFood = (date) => {
+    return useQuery(['food', date], () => fetchFood(date), {
+        enabled: !!date, // Only run the query if scheduleCode is defined
         refetchOnWindowFocus: true,
     });
 };
 
-export default useSeatStatus;
+export default useFood;
