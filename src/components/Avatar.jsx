@@ -6,7 +6,7 @@ import TextComponent from './TextComponent';
 import { globalStyles } from '../styles/globalStyles';
 
 const Avatar = (props) => {
-    const { photoUrl, size, bordered, border, styles } = props; // Thiết lập giá trị mặc định cho size
+    const { photoUrl, size, bordered, border, styles, uri } = props; // Thiết lập giá trị mặc định cho size
 
     // Kết hợp kích thước với các style khác
     const localStyles = [
@@ -20,6 +20,8 @@ const Avatar = (props) => {
         <View style={{ width: size, height: size }}>
             {photoUrl ? (
                 <Image style={localStyles} source={photoUrl} />
+            ) : uri ? (
+                <Image style={localStyles} source={{ uri: uri }} />
             ) : (
                 <View style={localStyles}>
                     <TextComponent text="A" />

@@ -19,9 +19,8 @@ import screen from '../../assets/screen.png';
 import { TouchableHighlight } from 'react-native';
 
 const Seat = ({ navigation }) => {
-    const scheduleCode = 'SC130';
-    const { data, isLoading, isSuccess } = useSeatStatus(scheduleCode);
-
+    const scheduleCode = 'SC100';
+    const { data = [], isLoading, isSuccess } = useSeatStatus(scheduleCode);
     const getImageSize = (name) => {
         switch (name) {
             case 'Ghế Thường':
@@ -34,11 +33,13 @@ const Seat = ({ navigation }) => {
                 return { width: wp(12), height: hp(6) }; // Kích thước mặc định
         }
     };
-    const [selectedSeat, setSelectedSeat] = useState([]);
+    const [selectedSeats, setSelectedSeats] = useState([]);
+
     const [modalVisible, setModalVisible] = useState(false);
+    const [modalVisibleSelected, setModalVisibleSelected] = useState(false);
 
     const handleSelectSeat = (seat) => {
-        setSelectedSeat((prev) => {
+        setSelectedSeats((prev) => {
             let updatedSeats;
 
             // Kiểm tra xem ghế đã được chọn hay chưa.
@@ -62,7 +63,7 @@ const Seat = ({ navigation }) => {
     };
 
     const getSeatClass = (seat) => {
-        if (selectedSeat && selectedSeat.includes(seat)) {
+        if (selectedSeats && selectedSeats.includes(seat)) {
             return '#66d6ff'; //đã chọn
             // return '#1185fa'; //giữ chỗ
             // return '#F5EE76'; //bao tri
@@ -81,7 +82,7 @@ const Seat = ({ navigation }) => {
                 return 'rgba(255, 255, 255,0.9)';
         }
     };
-    const UserItem = ({ image, name, seatNumber, seat }) => {
+    const SeatItem = ({ image, name, seatNumber, seat }) => {
         const size = getImageSize(name);
         return (
             <View
@@ -96,7 +97,13 @@ const Seat = ({ navigation }) => {
                     alignItems: 'center',
                 }}
             >
-                <TouchableWithoutFeedback onPress={() => handleSelectSeat(seat)}>
+                <TouchableWithoutFeedback
+                    onPress={() => {
+                        if (seat.status === 1 && seat.statusSeat !== 0) {
+                            handleSelectSeat(seat);
+                        }
+                    }}
+                >
                     <View className=" justify-center items-center ">
                         <View className="relative  h-full w-full">
                             <Image
@@ -119,6 +126,13 @@ const Seat = ({ navigation }) => {
             </View>
         );
     };
+    const handlePress = () => {
+        if (selectedSeats.length === 0) {
+            setModalVisibleSelected(true);
+            return;
+        }
+        navigation.navigate('Food', { selectedSeats });
+    };
 
     return (
         <Container
@@ -129,12 +143,14 @@ const Seat = ({ navigation }) => {
             style={{ color: 'white', fontWeight: '700' }}
             styleSpan={{ color: 'white' }}
         >
-            {isLoading && <ActivityIndicator size="large" color="white" />}
+            {isLoading && (
+                <ActivityIndicator size="large" color="white" className="flex-1 items-center justify-center" />
+            )}
             {isSuccess && (
                 <View style={styles.container}>
                     <View
                         style={{
-                            minHeight: hp(70),
+                            minHeight: hp(75),
 
                             alignItems: 'center',
                             justifyContent: 'center',
@@ -145,6 +161,8 @@ const Seat = ({ navigation }) => {
                             showsVerticalScrollIndicator={false}
                             style={{
                                 flexDirection: 'column',
+                                backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                                marginTop: hp(1),
                             }}
                             contentContainerStyle={{
                                 alignItems: 'center',
@@ -163,7 +181,7 @@ const Seat = ({ navigation }) => {
                                         data={data}
                                         keyExtractor={(item) => item.code}
                                         renderItem={({ item }) => (
-                                            <UserItem
+                                            <SeatItem
                                                 name={item.name}
                                                 image={item.image}
                                                 seatNumber={item.seatNumber}
@@ -260,21 +278,21 @@ const Seat = ({ navigation }) => {
                         </ScrollView>
                     </View>
 
-                    <View style={styles.footer} className="bg-white  flex-col px-5 py-2  ">
-                        {selectedSeat.length > 0 && (
-                            <View className="  flex-row   space-y-10  " style={{ height: hp(3) }}>
+                    <View style={styles.footer} className="bg-white  flex-col px-8 py-2  ">
+                        {selectedSeats.length > 0 && (
+                            <View className="  flex-row   space-y-10  " style={{ height: hp(2.5) }}>
                                 <Text
                                     numberOfLines={1}
                                     ellipsizeMode="tail"
                                     className="font-semibold text-sm   max-w-[93%] "
                                 >
-                                    {selectedSeat.length + 'x'} <Text className="font-medium">ghế: </Text>
-                                    {selectedSeat.map((item) => item?.seatNumber).join(', ')}
+                                    {selectedSeats.length + 'x'} <Text className="font-medium">ghế: </Text>
+                                    {selectedSeats.map((item) => item?.seatNumber).join(', ')}
                                 </Text>
                             </View>
                         )}
 
-                        <View className="  flex-row  " style={{ height: hp(3) }}>
+                        <View className="  flex-row  " style={{ height: hp(2.5) }}>
                             <Text
                                 numberOfLines={1}
                                 ellipsizeMode="tail"
@@ -289,18 +307,20 @@ const Seat = ({ navigation }) => {
                         </View>
 
                         <View className="  flex-row   " style={{ height: hp(6) }}>
-                            <View className="  w-[70%]  flex justify-around ">
-                                <Text className="text-[#8f8e8e]  ">2D Phụ đề Việt</Text>
+                            <View className="  w-[70%]  flex justify-start ">
+                                <Text className="text-[#8f8e8e]  " style={{ marginBottom: hp(1) }}>
+                                    2D Phụ đề Việt
+                                </Text>
 
-                                <Text className="font-semibold ">
-                                    {selectedSeat.reduce((sum, seat) => sum + seat.price, 0).toLocaleString()} đ
+                                <Text className="font-semibold  text-sm">
+                                    {selectedSeats.reduce((sum, seat) => sum + seat.price, 0).toLocaleString()} đ
                                 </Text>
                             </View>
 
-                            <View className=" w-[30%] items-center justify-center">
-                                <TouchableOpacity onPress={() => navigation.navigate('Food')}>
+                            <View className=" w-[30%] items-center justify-center ">
+                                <TouchableOpacity onPress={handlePress}>
                                     <LinearGradient
-                                        className=" border border-black rounded-3xl  px-5 py-2  "
+                                        className=" border border-black rounded-3xl  px-3 py-1  "
                                         colors={['#ED999A', '#F6D365']}
                                         start={{ x: 0.4, y: 0.1 }}
                                         end={{ x: 0.9, y: 0.2 }}
@@ -339,6 +359,34 @@ const Seat = ({ navigation }) => {
                             </View>
                         </View>
                     </Modal>
+
+                    <Modal
+                        animationType="none"
+                        transparent={true}
+                        visible={modalVisibleSelected}
+                        onRequestClose={() => setModalVisibleSelected(false)}
+                    >
+                        <View className="  flex-1 justify-center items-center bg-black/30  ">
+                            {/* Nội dung modal */}
+                            <View className="bg-white  rounded-lg " style={{ height: hp(10), width: wp(60) }}>
+                                <View
+                                    style={{ height: hp(5), width: wp(60) }}
+                                    className="justify-center items-center border-b-[0.5px] border-gray-300"
+                                >
+                                    <Text className="text-sm">Xin chọn ít nhất 1 ghế</Text>
+                                </View>
+
+                                <TouchableHighlight
+                                    style={{ height: hp(5), width: wp(60) }}
+                                    onPress={() => setModalVisibleSelected(false)}
+                                    className="justify-center items-center bg-white rounded-b-lg "
+                                    underlayColor="#DDDDDD"
+                                >
+                                    <Text className="text-red-500 text-center">Đóng</Text>
+                                </TouchableHighlight>
+                            </View>
+                        </View>
+                    </Modal>
                 </View>
             )}
         </Container>
@@ -347,13 +395,8 @@ const Seat = ({ navigation }) => {
 
 const styles = StyleSheet.create({
     container: {
-        backgroundColor: 'rgba(255, 255, 255, 0.1)',
         height: hp(90),
         width: wp(100),
-    },
-
-    listSeat: {
-        width: 'auto',
     },
 
     seat: {
@@ -366,6 +409,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         marginVertical: 10,
+        width: wp(100),
     },
     footer: {
         height: hp(15),
