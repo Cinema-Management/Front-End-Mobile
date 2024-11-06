@@ -6,9 +6,8 @@ import { API_URL } from '@env';
 
 const fetchSeatByRoomCode = async (code) => {
     try {
-        console.log('API_URL111111a', API_URL);
         const response = await axios.get(
-            `${URL}/api/seat-status-in-schedules/getAllSeatsStatusInSchedule?scheduleCode=${code}`,
+            `${API_URL}/api/seat-status-in-schedules/getAllSeatsStatusInSchedule?scheduleCode=${code}`,
         );
         const data = response.data;
         return data;
@@ -26,7 +25,6 @@ const fetchSeatByRoomCode = async (code) => {
 const useSeatStatus = (scheduleCode) => {
     return useQuery(['seatStatus', scheduleCode], () => fetchSeatByRoomCode(scheduleCode), {
         enabled: !!scheduleCode, // Only run the query if scheduleCode is defined
-        refetchOnWindowFocus: true,
         staleTime: 1000 * 60 * 7,
         cacheTime: 1000 * 60 * 10,
         refetchInterval: 1000 * 60 * 7,

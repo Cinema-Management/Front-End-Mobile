@@ -149,6 +149,32 @@ function formatDateTicket(dateString) {
     return `${hours}:${minutes} | ${dayName}, ${day}/${month}/${year}`;
 }
 
+function formatDateTimeSalesInvoice(dateString) {
+    const date = new Date(dateString);
+
+    date.setUTCHours(date.getUTCHours() + 7);
+
+    const days = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
+    const dayName = days[date.getUTCDay()];
+
+    const day = String(date.getUTCDate()).padStart(2, '0');
+    const month = String(date.getUTCMonth() + 1).padStart(2, '0');
+    const year = String(date.getUTCFullYear()).padStart(2, '0');
+    const hours = String(date.getUTCHours()).padStart(2, '0');
+    const minutes = String(date.getUTCMinutes()).padStart(2, '0');
+
+    return `${hours}:${minutes}, ${day}/${month}/${year}`;
+}
+const formatTimer = (seconds) => {
+    const minutes = Math.floor(seconds / 60); // Lấy số phút
+    const remainingSeconds = seconds % 60; // Lấy số giây còn lại
+
+    // Đảm bảo luôn có 2 chữ số cho phút và giây
+    const formattedMinutes = String(minutes).padStart(2, '0');
+    const formattedSeconds = String(remainingSeconds).padStart(2, '0');
+
+    return `${formattedMinutes}:${formattedSeconds}`;
+};
 module.exports = {
     formatDate,
     formatDuration,
@@ -158,4 +184,6 @@ module.exports = {
     generateDates,
     formatTime,
     formatDateTicket,
+    formatDateTimeSalesInvoice,
+    formatTimer,
 };

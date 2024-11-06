@@ -18,6 +18,7 @@ import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-nat
 import { ActivityIndicator } from 'react-native-paper';
 import useMovieSchedule from '../queries/useMovieSchedule';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useFocusEffect } from '@react-navigation/native';
 const { width, height } = Dimensions.get('window');
 const CarouselComponent = memo(({ index, data, navigation }) => {
     const renderItem = useCallback(
@@ -45,7 +46,7 @@ const CarouselComponent = memo(({ index, data, navigation }) => {
                             </View>
                             <TouchableOpacity
                                 className="w-24 mb-2 mr-2 py-2 rounded-[100px] border border-white justify-center items-center "
-                                onPress={() => navigation.navigate('Trailer', { item })}
+                                onPress={() => navigation.navigate('Film', { item })}
                             >
                                 <LinearGradient
                                     colors={['#ED999A', '#F6D365']}
@@ -85,6 +86,11 @@ const CarouselComponent = memo(({ index, data, navigation }) => {
 const Home = memo(({ navigation }) => {
     const [scheduleId, setScheduleId] = useState(1);
     const { data, isLoading, isSuccess, refetch, isRefetching } = useMovieSchedule(scheduleId);
+    useFocusEffect(
+        useCallback(() => {
+            refetch();
+        }, [refetch]),
+    );
     const [index, setIndex] = useState(1);
     const layout = useWindowDimensions();
     const handleIndexChange = (newIndex) => {

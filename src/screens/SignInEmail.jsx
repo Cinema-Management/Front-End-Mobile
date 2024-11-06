@@ -68,6 +68,7 @@ export default function SignInEmail({ navigation }) {
                 password: passWord.current,
                 type: 0,
             };
+            console.log('ne11221');
 
             const response = await axios.post(`${API_URL}/api/users/checkUserStatusByPhone`, newUser);
             const status = response.data;

@@ -4,7 +4,7 @@ import { API_URL } from '@env';
 
 const fetchMovieHome = async (status) => {
     try {
-        console.log('URL-API1111sadasdas', API_URL);
+        console.log('URLHome', API_URL);
         const response = await axios.get(`${API_URL}/api/schedules/getAllMovieWithSchedules?status=${status}`);
         const data = response.data;
 
@@ -29,8 +29,8 @@ const useMovieSchedule = (status) => {
         staleTime: 1000 * 60 * 7,
         cacheTime: 1000 * 60 * 10,
         refetchInterval: 1000 * 60 * 7,
-        refetchOnWindowFocus: false,
         refetchOnReconnect: false,
+        refetchOnWindowFocus: 'always',
     });
 };
 
