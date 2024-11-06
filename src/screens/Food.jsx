@@ -1,18 +1,38 @@
-import React, { useEffect, useState } from 'react';
-import { FlatList, ScrollView, StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
+import { FlatList, ScrollView, StyleSheet, Text, View, TouchableOpacity, ActivityIndicator } from 'react-native';
 import Container from '../components/Container';
+
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { LinearGradient } from 'expo-linear-gradient';
 import Avatar from '../components/Avatar';
 import useFood from '../queries/useFood';
-import { ActivityIndicator } from 'react-native-paper';
+import { formatDateTicket, handleChangAge } from '../utils/Date';
+import { useFocusEffect } from '@react-navigation/native';
+import { TimerContext } from '../utils/TimerContext'; // Đường dẫn tới TimerContext
+import { formatTimer } from '../utils/Date';
 
-const Food = ({ route }) => {
-    const { selectedSeats } = route.params || [];
-    const date = '2024-10-24T17:00:00.000Z';
-    const { data = [], isLoading, isSuccess } = useFood(date);
+const Food = ({ route, navigation }) => {
+    const { selectedSeats, showtime } = route.params || [];
+    const { data = [], isLoading, isSuccess, refetch } = useFood(showtime?.date);
     const [quantities, setQuantities] = useState({});
     const [selectedFoods, setSelectedFoods] = useState([]);
+    const { seconds, startTimer, resetTimer, setShowtime, setSelectedSeats, nextTimer } = useContext(TimerContext);
+
+    const [loading, setLoading] = useState(false);
+
+    useFocusEffect(
+        useCallback(() => {
+            setShowtime(showtime);
+            setSelectedSeats(selectedSeats);
+            resetTimer();
+            startTimer();
+            refetch();
+            setLoading(true);
+            setTimeout(() => {
+                setLoading(false);
+            }, 500);
+        }, [refetch]),
+    );
 
     useEffect(() => {
         if (data.length > 0) {
@@ -101,17 +121,38 @@ const Food = ({ route }) => {
     return (
         <Container
             back={true}
+            targetRoute="Film"
+            showtimeValue={showtime}
+            selectedSeatValue={selectedSeats}
             isScroll={false}
-            title="TD Sài Gòn"
+            title={showtime?.cinema}
+            span={`${showtime?.room} - ${formatDateTicket(showtime?.startTime)}`}
             style={{ color: 'white', fontWeight: '700' }}
             styleSpan={{ color: 'white' }}
         >
-            {isLoading && (
+            {(isLoading || loading) && (
                 <ActivityIndicator size="large" color="white" className="flex-1 items-center justify-center" />
             )}
 
-            {isSuccess && (
+            {isSuccess && !loading && (
                 <View style={styles.container}>
+                    {data.length === 0 && (
+                        <View className="absolute top-[30%] px-3">
+                            <Text className="text-white text-center text-lg">Chưa bán sản phẩm nào!</Text>
+                        </View>
+                    )}
+                    <View className="bg-orange-400  absolute w-full justify-center items-center top-0 z-50 ">
+                        {/* <Timer
+                            isActive={true}
+                            showtime={showtime}
+                            selectedSeats={selectedSeats}
+                            classNameTimer="text-white text-sm "
+                        /> */}
+
+                        <Text className="text-white text-sm ">
+                            Thời gian giữ ghế: <Text className="font-bold">{formatTimer(seconds)}</Text>
+                        </Text>
+                    </View>
                     <FlatList
                         showsVerticalScrollIndicator={false}
                         style={
@@ -131,7 +172,7 @@ const Food = ({ route }) => {
                                       },
                                   ]
                         }
-                        data={data}
+                        data={data.filter((item) => item.productName.toLowerCase().includes('combo'))}
                         keyExtractor={(item) => item.code}
                         renderItem={({ item, index }) => (
                             <FoodItem
@@ -146,7 +187,7 @@ const Food = ({ route }) => {
                             />
                         )}
                     />
-
+                    {/* Selected food */}
                     {selectedFoods.length > 0 && (
                         <View style={{ height: hp(10), width: wp(100), backgroundColor: 'rgba(255, 255, 255, 0.1)' }}>
                             <FlatList
@@ -161,7 +202,7 @@ const Food = ({ route }) => {
                                 renderItem={({ item }) => (
                                     <View
                                         className="bg-white flex-row items-center justify-start rounded-xl px-1"
-                                        style={{ maxWidth: wp(55), width: 'auto', marginRight: wp(1), height: hp(8) }}
+                                        style={{ maxWidth: wp(55), width: 'auto', marginRight: wp(1), height: hp(7) }}
                                     >
                                         <View style={{ width: wp(15) }} className="justify-center items-center">
                                             <Avatar uri={item.image} size={hp(6)} />
@@ -211,18 +252,21 @@ const Food = ({ route }) => {
                                 ellipsizeMode="tail"
                                 className="font-semibold text-base uppercase  max-w-[93%]  "
                             >
-                                Thám tử lừng danh conan movie 7 Thám tử lừng danh conan movie
+                                {showtime?.movie}
                             </Text>
 
                             <View className="ml-1 border rounded border-yellow-600 items-center justify-center h-[75%]   w-[7%]">
-                                <Text className="text-[10px] text-yellow-400 font-bold">T16</Text>
+                                <Text className="text-[10px] text-yellow-400 font-bold">
+                                    {handleChangAge(showtime?.ageRestriction)}
+                                </Text>
                             </View>
                         </View>
-
                         <View className="  flex-row   " style={{ height: hp(6) }}>
                             <View className="  w-[70%]  flex justify-start ">
-                                <Text className="text-[#8f8e8e]  " style={{ marginBottom: hp(1) }}>
-                                    2D Phụ đề Việt
+                                <Text className="text-[#8f8e8e] pb-1 ">
+                                    {showtime?.screeningFormat} {showtime?.audio === 'Gốc' ? '' : ' ' + showtime?.audio}
+                                    <Text className="text-[15px]"> Phụ đề </Text>
+                                    {showtime?.subtitle}
                                 </Text>
 
                                 <Text className="font-semibold  text-sm">{calculateTotal().toLocaleString()} đ</Text>
@@ -230,7 +274,15 @@ const Food = ({ route }) => {
 
                             <View className=" w-[30%] items-center justify-center ">
                                 <TouchableOpacity
-                                    onPress={() => navigation.navigate('Food', { selectedSeats: selectedSeats })}
+                                    onPress={() => {
+                                        navigation.navigate('Payment', {
+                                            selectedSeats,
+                                            selectedFoods,
+                                            showtime,
+                                            totalAmount: calculateTotal(),
+                                            products: data,
+                                        });
+                                    }}
                                 >
                                     <LinearGradient
                                         className=" border border-black rounded-3xl  px-3 py-1  "
@@ -258,6 +310,8 @@ const styles = StyleSheet.create({
 
     listFood: {
         marginTop: hp(1),
+        paddingTop: hp(0.5),
+
         backgroundColor: 'rgba(255, 255, 255, 0.1)',
 
         width: wp(100),

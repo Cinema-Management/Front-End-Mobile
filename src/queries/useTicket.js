@@ -4,9 +4,9 @@ import { API_URL } from '@env';
 
 const fetchTicketByCustomerCode = async (code) => {
     try {
-        console.log('Api111111', API_URL);
         const response = await axios.get(`${API_URL}/api/sales-invoices/invoiceSaleByCustomerCode/${code}`);
         const data = response.data;
+
         return data;
     } catch (error) {
         if (error.response) {
@@ -22,7 +22,6 @@ const fetchTicketByCustomerCode = async (code) => {
 const useTicket = (customerCode) => {
     return useQuery(['TicketByCustomerCode', customerCode], () => fetchTicketByCustomerCode(customerCode), {
         enabled: !!customerCode,
-        refetchOnWindowFocus: true,
         staleTime: 1000 * 60 * 7,
         cacheTime: 1000 * 60 * 10,
         refetchInterval: 1000 * 60 * 7,

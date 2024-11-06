@@ -1,8 +1,8 @@
-import React, { memo, useEffect, useMemo, useState } from 'react';
+import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, StyleSheet, TouchableWithoutFeedback, Modal } from 'react-native';
 import { Icon, Button } from 'react-native-elements';
 import Container from '../components/Container';
-import { useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import ButtonPrimary from '../components/ButtonPrimary';
 import { EvilIcons, Feather, FontAwesome } from '@expo/vector-icons';
 import { parseFormattedDateWithTime, generateDates, formatTime } from '../utils/Date';
@@ -14,7 +14,7 @@ import useSchedule from '../queries/useSchedule';
 import { ActivityIndicator } from 'react-native-paper';
 dayjs.locale('vi');
 const Film = ({ navigate, route }) => {
-    const { item } = route.params;
+    const { item, showtime } = route.params || {};
     const navigation = useNavigation();
     const [selectedDate, setSelectedDate] = useState(dayjs().format('DD-MM'));
     const [displayDate, setDisplayDate] = useState(generateDates()[0].fullDateString);
@@ -30,7 +30,13 @@ const Film = ({ navigate, route }) => {
         setDisplayDate(date.fullDateString);
     };
 
-    const { data, isLoading, isSuccess } = useSchedule(item.code, isoDate);
+    const { data, isLoading, isSuccess, refetch } = useSchedule(item?.code || showtime?.movieCode, isoDate);
+
+    useFocusEffect(
+        useCallback(() => {
+            refetch();
+        }, [refetch]),
+    );
 
     const toggleCinema = (index) => {
         setOpenCinemas((prev) => ({
@@ -78,7 +84,7 @@ const Film = ({ navigate, route }) => {
     };
 
     const renderCinemas = (data) => {
-        return data[0]?.cinemas.map((cinema, index) => (
+        return (data[0]?.cinemas || data).map((cinema, index) => (
             <View key={index} style={[styles.cinemaContainer, index === 0 ? styles.firstCinemaContainer : null]}>
                 <TouchableWithoutFeedback onPress={() => toggleCinema(index)}>
                     <View>
@@ -115,7 +121,8 @@ const Film = ({ navigate, route }) => {
                                         className="text-white text-[15px] font-light ml-1 uppercase"
                                         numberOfLines={1}
                                     >
-                                        {item.name} <Text className="text-[15px]"> Phụ đề </Text>
+                                        {item.name} {item.audio === 'Gốc' ? '' : ' ' + item.audio}
+                                        <Text className="text-[15px]"> Phụ đề </Text>
                                         {item.subtitle}
                                     </Text>
                                 </View>
@@ -125,7 +132,22 @@ const Film = ({ navigate, route }) => {
                                             <TouchableOpacity
                                                 key={idx}
                                                 style={[styles.timeButton]}
-                                                onPress={() => navigation.navigate('Seat')}
+                                                onPress={() =>
+                                                    navigation.navigate('Seat', {
+                                                        showtime: {
+                                                            ...time,
+                                                            screeningFormat: item.name,
+                                                            audio: item.audio,
+                                                            subtitle: item.subtitle,
+                                                            cinema: cinema.name,
+                                                            movie: item.movie,
+                                                            movieCode: item.movieCode,
+                                                            image: item.image,
+                                                            ageRestriction: item.ageRestriction,
+                                                            province: cinema.province,
+                                                        },
+                                                    })
+                                                }
                                             >
                                                 <Text style={[styles.timeText]}>{formatTime(time.startTime)}</Text>
                                             </TouchableOpacity>
@@ -205,7 +227,7 @@ const Film = ({ navigate, route }) => {
     return (
         <Container
             isScroll={false}
-            title={item.name}
+            title={item?.name || showtime?.movie}
             back={true}
             style={{
                 color: 'white',
@@ -274,7 +296,7 @@ const Film = ({ navigate, route }) => {
                     <>
                         {isSuccess && data && data.length && data[0]?.cinemas ? (
                             <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ flexGrow: 1 }}>
-                                {filterData.length > 0 ? renderCinemasFilter(filterData) : renderCinemas(data)}
+                                {filterData.length > 0 ? renderCinemas(filterData) : renderCinemas(data)}
                             </ScrollView>
                         ) : (
                             <Text style={{ color: 'white', textAlign: 'center', marginTop: 20 }}>
