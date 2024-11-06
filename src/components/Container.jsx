@@ -1,7 +1,18 @@
 /** @format */
 
-import React, { useState } from 'react';
-import { View, ScrollView, ImageBackground, TouchableWithoutFeedback, RefreshControl, StyleSheet } from 'react-native';
+import React, { useContext, useEffect, useState } from 'react';
+import {
+    View,
+    ScrollView,
+    ImageBackground,
+    TouchableWithoutFeedback,
+    RefreshControl,
+    StyleSheet,
+    TouchableHighlight,
+    Text,
+    TouchableOpacity,
+    Modal,
+} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { FontAwesome } from '@expo/vector-icons';
 import { globalStyles } from '../styles/globalStyles';
@@ -14,6 +25,8 @@ import bg from '../../assets/BG.png';
 import image1 from '../../assets/img1.png';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
+import updateStatusSeat from '../queries/updateStatusSeat';
+import { TimerContext } from '../utils/TimerContext';
 const Container = (props) => {
     const {
         children,
@@ -33,7 +46,12 @@ const Container = (props) => {
         onPress,
         onRefresh,
         home,
+        targetRoute,
+        showtimeValue,
+        selectedSeatValue,
+        openModalPayment,
     } = props;
+    const { stopTimer } = useContext(TimerContext);
     const navigation = useNavigation();
     const [refreshing, setRefreshing] = useState(false);
 
@@ -45,6 +63,18 @@ const Container = (props) => {
             setRefreshing(false);
         }
     };
+    const [modalVisible, setModalVisible] = useState(false);
+
+    const handleSuccess = () => {
+        stopTimer();
+        setModalVisible(false);
+        updateStatusSeat(selectedSeatValue, 1, showtimeValue?.code);
+        navigation.navigate(targetRoute, { showtime: showtimeValue });
+    };
+
+    useEffect(() => {
+        if (!openModalPayment) setModalVisible(false);
+    }, [openModalPayment]);
 
     const renderHeader = () =>
         (title || back || right) && (
@@ -70,7 +100,24 @@ const Container = (props) => {
                             left: 8,
                         }}
                         icon={<FontAwesome name="angle-left" size={35} color={colors.white} />}
-                        onPress={() => navigation.goBack()}
+                        onPress={() => {
+                            // Điều hướng đến route mục tiêu
+                            if (targetRoute) {
+                                if (openModalPayment) {
+                                    setModalVisible(true);
+
+                                    return;
+                                } else {
+                                    if (targetRoute === 'Film') {
+                                        updateStatusSeat(selectedSeatValue, 1, showtimeValue?.code);
+                                        stopTimer();
+                                    }
+                                    navigation.navigate(targetRoute, { showtime: showtimeValue });
+                                }
+                            } else {
+                                navigation.goBack(); // Quay lại trang trước nếu không có targetRoute
+                            }
+                        }}
                     />
                 )}
                 <View
@@ -130,6 +177,40 @@ const Container = (props) => {
                         <View style={[globalStyles.container, styles]}>
                             {renderHeader()}
                             {children}
+                            <Modal
+                                transparent={true}
+                                visible={modalVisible}
+                                onRequestClose={() => setModalVisible(false)}
+                            >
+                                <View className=" justify-center items-center bg-black/30  flex-1 ">
+                                    {/* Nội dung modal */}
+                                    <View className="bg-white  rounded-lg " style={{ height: hp(15), width: wp(60) }}>
+                                        <View
+                                            style={{ height: hp(10), width: wp(60) }}
+                                            className="justify-center items-center border-b-[0.5px] border-gray-300"
+                                        >
+                                            <Text className="text-sm font-bold">Thông báo</Text>
+                                            <Text className="text-sm">Bạn có muốn thoát khỏi?</Text>
+                                        </View>
+                                        <View className="flex-row items-center justify-center  h-[50%] flex-1 rounded-b-lg">
+                                            <TouchableOpacity
+                                                onPress={() => setModalVisible(false)}
+                                                className="justify-center items-center bg-white  flex-1 h-[100%] border-r-0.5 rounded-bl-lg"
+                                                underlayColor="#DDDDDD"
+                                            >
+                                                <Text className="text-blue-500 text-center font-bold ">Hủy</Text>
+                                            </TouchableOpacity>
+                                            <TouchableOpacity
+                                                onPress={handleSuccess}
+                                                className="justify-center items-center bg-white rounded-b-lg flex-1 h-[100%]"
+                                                underlayColor="#DDDDDD"
+                                            >
+                                                <Text className="text-blue-500 text-center">Đồng ý</Text>
+                                            </TouchableOpacity>
+                                        </View>
+                                    </View>
+                                </View>
+                            </Modal>
                         </View>
                     ) : (
                         <View style={{ flex: 1 }}>

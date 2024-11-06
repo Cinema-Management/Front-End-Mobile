@@ -2,15 +2,13 @@ import React, { useEffect } from 'react';
 import { View, Text, Image, StyleSheet, Dimensions } from 'react-native';
 import Animated, { Easing, useSharedValue, useAnimatedStyle, withTiming, withRepeat } from 'react-native-reanimated';
 
-const { width, height } = Dimensions.get('window');
-
 const Loading = () => {
     const opacity = useSharedValue(0);
 
     useEffect(() => {
         // Hiệu ứng mờ dần cho logo
         opacity.value = withTiming(1, {
-            duration: 2500,
+            duration: 1000,
             easing: Easing.inOut(Easing.ease),
         });
     }, []);

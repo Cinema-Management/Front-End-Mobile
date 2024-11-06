@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { memo, useCallback, useEffect, useState } from 'react';
 import {
     FlatList,
     StyleSheet,
@@ -9,34 +9,40 @@ import {
     Image,
     ScrollView,
     Modal,
+    Alert,
+    ActivityIndicator,
 } from 'react-native';
 import Container from '../components/Container';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { LinearGradient } from 'expo-linear-gradient';
 import useSeatStatus from '../queries/useSeatStatus';
-import { ActivityIndicator } from 'react-native-paper';
 import screen from '../../assets/screen.png';
 import { TouchableHighlight } from 'react-native';
+import { formatDateTicket, handleChangAge } from '../utils/Date';
+import { useFocusEffect } from '@react-navigation/native';
 
-const Seat = ({ navigation }) => {
-    const scheduleCode = 'SC100';
-    const { data = [], isLoading, isSuccess } = useSeatStatus(scheduleCode);
-    const getImageSize = (name) => {
-        switch (name) {
-            case 'Ghế Thường':
-                return { width: wp(6), height: hp(2.3), marginRight: wp(1) }; // Kích thước cho ghế thường
-            case 'Ghế VIP':
-                return { width: wp(6.5), height: hp(3) }; // Kích thước cho ghế VIP
-            case 'Ghế đôi':
-                return { width: wp(14.1), height: hp(3.5) }; // Kích thước lớn hơn cho ghế đôi
-            default:
-                return { width: wp(12), height: hp(6) }; // Kích thước mặc định
-        }
-    };
+import updateStatusSeat from '../queries/updateStatusSeat';
+const Seat = memo(({ navigation, route }) => {
+    const { showtime } = route.params || {};
+    const { data = [], isLoading, isSuccess, refetch, isFetching } = useSeatStatus(showtime?.code);
+
     const [selectedSeats, setSelectedSeats] = useState([]);
 
     const [modalVisible, setModalVisible] = useState(false);
     const [modalVisibleSelected, setModalVisibleSelected] = useState(false);
+    const [loading, setLoading] = useState(false);
+
+    useFocusEffect(
+        useCallback(() => {
+            refetch();
+        }, [refetch]),
+    );
+    // useEffect(() => {
+    //     if (showtime?.check) {
+    //         // setSelectedSeats([]);
+    //         refetch();
+    //     }
+    // }, [showtime]);
 
     const handleSelectSeat = (seat) => {
         setSelectedSeats((prev) => {
@@ -57,11 +63,33 @@ const Seat = ({ navigation }) => {
                 // Nếu ghế chưa chọn và số lượng ghế hiện tại nhỏ hơn giới hạn, thêm ghế vào danh sách
                 updatedSeats = [...prev, seat];
             }
+            updatedSeats.sort((a, b) => {
+                const rowA = a.seatNumber[0]; // Lấy ký tự hàng
+                const rowB = b.seatNumber[0];
+                const numA = parseInt(a.seatNumber.slice(1)); // Lấy số ghế
+                const numB = parseInt(b.seatNumber.slice(1));
+
+                // Sắp xếp theo hàng trước, nếu hàng giống nhau thì sắp xếp theo số ghế
+                if (rowA < rowB) return -1;
+                if (rowA > rowB) return 1;
+                return numA - numB;
+            });
 
             return updatedSeats;
         });
     };
-
+    const getImageSize = (name) => {
+        switch (name) {
+            case 'Ghế Thường':
+                return { width: wp(6), height: hp(2.3), marginRight: wp(1) }; // Kích thước cho ghế thường
+            case 'Ghế VIP':
+                return { width: wp(6.5), height: hp(3) }; // Kích thước cho ghế VIP
+            case 'Ghế đôi':
+                return { width: wp(14.1), height: hp(3.5) }; // Kích thước lớn hơn cho ghế đôi
+            default:
+                return { width: wp(12), height: hp(6) }; // Kích thước mặc định
+        }
+    };
     const getSeatClass = (seat) => {
         if (selectedSeats && selectedSeats.includes(seat)) {
             return '#66d6ff'; //đã chọn
@@ -72,14 +100,14 @@ const Seat = ({ navigation }) => {
 
         switch (seat.status) {
             case 2:
-                return '#00FFFF';
-            case 3:
                 return '#1185fa';
+            case 3:
+                return '#F68C66';
             default:
                 if (seat.statusSeat === 0) {
                     return '#F5EE76';
                 }
-                return 'rgba(255, 255, 255,0.9)';
+                return 'rgba(255, 255, 255,0.8)';
         }
     };
     const SeatItem = ({ image, name, seatNumber, seat }) => {
@@ -118,7 +146,7 @@ const Seat = ({ navigation }) => {
                                 resizeMode="cover"
                             />
                         </View>
-                        <Text className="absolute " style={{ fontSize: hp(1.2) }}>
+                        <Text className="absolute text-gray-800 " style={{ fontSize: hp(1.2) }}>
                             {seatNumber}
                         </Text>
                     </View>
@@ -126,27 +154,39 @@ const Seat = ({ navigation }) => {
             </View>
         );
     };
-    const handlePress = () => {
+    const handlePress = async () => {
         if (selectedSeats.length === 0) {
             setModalVisibleSelected(true);
             return;
+        } else {
+            updateStatusSeat(selectedSeats, 2, showtime?.code);
+
+            const data1 = selectedSeats.map((seat) => ({ ...seat, status: 2 }));
+            navigation.navigate('Food', { selectedSeats: data1, showtime });
         }
-        navigation.navigate('Food', { selectedSeats });
     };
 
     return (
         <Container
             back={true}
             isScroll={false}
-            title="TD Sài Gòn"
-            span="Phòng 1 17:00, 10/12/2024"
+            title={showtime?.cinema}
+            span={`${showtime?.room} - ${formatDateTicket(showtime?.startTime)}`}
             style={{ color: 'white', fontWeight: '700' }}
             styleSpan={{ color: 'white' }}
         >
-            {isLoading && (
+            {(isLoading || isFetching || loading) && (
                 <ActivityIndicator size="large" color="white" className="flex-1 items-center justify-center" />
             )}
-            {isSuccess && (
+            {isSuccess && data.length === 0 && (
+                <View style={styles.container} className="justify-center items-center px-3 ">
+                    <Text className="text-white text-center text-lg">
+                        Chưa có giá cho ngày này vui lòng liên hệ rạp để biết thêm thông tin chi tiết!
+                    </Text>
+                </View>
+            )}
+
+            {!loading && !isFetching && isSuccess && data.length > 0 && (
                 <View style={styles.container}>
                     <View
                         style={{
@@ -158,6 +198,8 @@ const Seat = ({ navigation }) => {
                     >
                         <ScrollView
                             horizontal={true}
+                            maximumZoomScale={10}
+                            minimumZoomScale={1}
                             showsVerticalScrollIndicator={false}
                             style={{
                                 flexDirection: 'column',
@@ -298,18 +340,22 @@ const Seat = ({ navigation }) => {
                                 ellipsizeMode="tail"
                                 className="font-semibold text-base uppercase  max-w-[93%]  "
                             >
-                                Thám tử lừng danh conan movie 7 Thám tử lừng danh conan movie
+                                {showtime.movie}
                             </Text>
 
                             <View className="ml-1 border rounded border-yellow-600 items-center justify-center h-[75%]   w-[7%]">
-                                <Text className="text-[10px] text-yellow-400 font-bold">T16</Text>
+                                <Text className="text-[10px] text-yellow-400 font-bold">
+                                    {handleChangAge(showtime?.ageRestriction)}
+                                </Text>
                             </View>
                         </View>
 
                         <View className="  flex-row   " style={{ height: hp(6) }}>
                             <View className="  w-[70%]  flex justify-start ">
-                                <Text className="text-[#8f8e8e]  " style={{ marginBottom: hp(1) }}>
-                                    2D Phụ đề Việt
+                                <Text className="text-[#8f8e8e] pb-1 ">
+                                    {showtime?.screeningFormat} {showtime?.audio === 'Gốc' ? '' : ' ' + showtime?.audio}
+                                    <Text className="text-[15px]"> Phụ đề </Text>
+                                    {showtime?.subtitle}
                                 </Text>
 
                                 <Text className="font-semibold  text-sm">
@@ -391,7 +437,7 @@ const Seat = ({ navigation }) => {
             )}
         </Container>
     );
-};
+});
 
 const styles = StyleSheet.create({
     container: {

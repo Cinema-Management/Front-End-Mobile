@@ -4,11 +4,15 @@ import axios from 'axios';
 
 import { API_URL } from '@env';
 
-const fetchFood = async (date) => {
+const fetchPromotionDetail = async (date) => {
     try {
-        const response = await axios.get(`${API_URL}/api/prices/getAllPriceFood?date=${date}`);
-        const data = response.data;
-        // const comboItems = data.filter((item) => item.productName.toLowerCase().includes('combo'));
+        const response = await axios.get(
+            `${API_URL}/api/promotion-details/getPromotionDetailsByDateAndStatus?date=${date}`,
+        );
+        const data = response.data || [];
+
+        // Sắp xếp dữ liệu theo type tăng dần
+        data.sort((a, b) => a.type - b.type);
 
         return data;
     } catch (error) {
@@ -22,11 +26,11 @@ const fetchFood = async (date) => {
     }
 };
 
-const useFood = (date) => {
-    return useQuery(['food', date], () => fetchFood(date), {
+const usePromotionDetail = (date) => {
+    return useQuery(['promotionDetail', date], () => fetchPromotionDetail(date), {
         enabled: !!date, // Only run the query if scheduleCode is defined
         refetchOnWindowFocus: true,
     });
 };
 
-export default useFood;
+export default usePromotionDetail;

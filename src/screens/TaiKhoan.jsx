@@ -63,7 +63,7 @@ const TaiKhoan = ({ navigation }) => {
                         <TouchableOpacity
                             className="flex-row"
                             style={{ width: wp(40) }}
-                            onPress={() => navigation.navigate('Seat')}
+                            onPress={() => navigation.navigate('TicketDetail')}
                         >
                             <Fontisto name="bell" size={24} color="orange" />
                             <Text className="text-white text-base font-normal ml-1">Thông báo</Text>

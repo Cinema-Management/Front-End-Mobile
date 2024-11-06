@@ -10,7 +10,8 @@ import DeleteAccount from '../screens/DeleteAccount';
 import ChangePassword from '../screens/ChangePassword';
 import Food from '../screens/Food';
 import Seat from '../screens/Seat';
-import Pay from '../screens/Pay';
+import Payment from '../screens/Payment';
+import TicketDetail from '../screens/TicketDetail';
 const Stack = createStackNavigator();
 
 const MainNavigator = () => {
@@ -29,10 +30,11 @@ const MainNavigator = () => {
             <Stack.Screen name="PlayYoutube" component={PlayYoutube} />
             <Stack.Screen name="DeleteAccount" component={DeleteAccount} />
             <Stack.Screen name="ChangePassword" component={ChangePassword} />
-            <Stack.Screen name="Pay" component={Pay} />
+            <Stack.Screen name="Payment" component={Payment} />
             <Stack.Screen name="Film" component={Film} />
             <Stack.Screen name="Food" component={Food} />
             <Stack.Screen name="Seat" component={Seat} />
+            <Stack.Screen name="TicketDetail" component={TicketDetail} />
         </Stack.Navigator>
     );
 };
