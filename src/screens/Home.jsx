@@ -8,6 +8,7 @@ import {
     TouchableOpacity,
     useWindowDimensions,
     TouchableWithoutFeedback,
+    ActivityIndicator,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
@@ -15,7 +16,6 @@ import Container from '../components/Container';
 import Carousel from 'react-native-reanimated-carousel';
 import BannerCarousel from '../components/BannerCarousel';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
-import { ActivityIndicator } from 'react-native-paper';
 import useMovieSchedule from '../queries/useMovieSchedule';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useFocusEffect } from '@react-navigation/native';
@@ -23,7 +23,7 @@ const { width, height } = Dimensions.get('window');
 const CarouselComponent = memo(({ index, data, navigation }) => {
     const renderItem = useCallback(
         ({ item }) => (
-            <TouchableWithoutFeedback onPress={() => navigation.navigate('MovieDetail', { item })}>
+            <TouchableWithoutFeedback onPress={() => navigation.navigate('MovieDetail', { item, index })}>
                 <View style={styles.item}>
                     <Image source={{ uri: item.image }} style={styles.image} />
                     <View
@@ -46,6 +46,7 @@ const CarouselComponent = memo(({ index, data, navigation }) => {
                             </View>
                             <TouchableOpacity
                                 className="w-24 mb-2 mr-2 py-2 rounded-[100px] border border-white justify-center items-center "
+                                disabled={index != 1 ? false : true}
                                 onPress={() => navigation.navigate('Film', { item })}
                             >
                                 <LinearGradient
@@ -86,11 +87,6 @@ const CarouselComponent = memo(({ index, data, navigation }) => {
 const Home = memo(({ navigation }) => {
     const [scheduleId, setScheduleId] = useState(1);
     const { data, isLoading, isSuccess, refetch, isRefetching } = useMovieSchedule(scheduleId);
-    useFocusEffect(
-        useCallback(() => {
-            refetch();
-        }, [refetch]),
-    );
     const [index, setIndex] = useState(1);
     const layout = useWindowDimensions();
     const handleIndexChange = (newIndex) => {
@@ -117,9 +113,10 @@ const Home = memo(({ navigation }) => {
         refetch();
     };
     const banners = [
-        { id: 1, img: require('../../assets/img1.png') },
-        { id: 2, img: require('../../assets/img1.png') },
-        { id: 3, img: require('../../assets/img1.png') },
+        { id: 1, img: 'https://td-cinemas.s3.ap-southeast-1.amazonaws.com/ab.jpg' },
+        { id: 2, img: 'https://td-cinemas.s3.ap-southeast-1.amazonaws.com/happyday.jpg' },
+        { id: 3, img: 'https://td-cinemas.s3.ap-southeast-1.amazonaws.com/BANNERP11-01.jpg' },
+        { id: 4, img: 'https://td-cinemas.s3.ap-southeast-1.amazonaws.com/zalopay.jpg' },
     ];
 
     const routes = useMemo(

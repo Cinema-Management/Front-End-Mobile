@@ -3,14 +3,13 @@ import { View, StyleSheet, Dimensions, Text, ScrollView, TouchableWithoutFeedbac
 import Container from '../components/Container';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { Image } from 'react-native';
-import { TouchableOpacity } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
 import { AntDesign } from '@expo/vector-icons';
 import { formatDate, formatDuration, handleChangAge, handleChangAgeRequirement } from '../utils/Date';
-import { Button } from 'react-native-elements';
 import ButtonPrimary from '../components/ButtonPrimary';
 export default function MovieDetail({ navigation, route }) {
-    const { item } = route.params;
+    const { item, index } = route.params;
+    console.log('item', item);
+    console.log('index', index);
     const [expanded, setExpanded] = useState(false);
     const maxLength = 265;
     const isTruncated = item.description.length > maxLength;
@@ -96,7 +95,7 @@ export default function MovieDetail({ navigation, route }) {
                 </View>
             </ScrollView>
 
-            <ButtonPrimary title="Đặt vé" onPress={() => navigation.navigate('Film', { item })} />
+            {index != 1 && <ButtonPrimary title="Đặt vé" onPress={() => navigation.navigate('Film', { item })} />}
         </Container>
     );
 }
