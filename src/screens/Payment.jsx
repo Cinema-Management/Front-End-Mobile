@@ -31,15 +31,17 @@ import { formatTimer } from '../utils/Date';
 import { useFocusEffect } from '@react-navigation/native';
 import usePromotionDetail from '../queries/usePromotionDetail';
 import voucher from '../../assets/voucher.png';
+import { useSelector } from 'react-redux';
 export default function Payment({ navigation, route }) {
     const { selectedSeats, selectedFoods, showtime, totalAmount, products } = route.params;
     const [loading, setLoading] = useState(false);
     const [selectedOption, setSelectedOption] = useState('zalopay');
-    const { seconds, setReturnCode } = useContext(TimerContext);
+    const { seconds, setReturnCode, stopTimer } = useContext(TimerContext);
     const [open, setOpen] = useState(true);
     const [modalVisible, setModalVisible] = useState(false);
     const { data = [], isLoading, isSuccess } = usePromotionDetail(showtime?.date);
     const [selectedPromotionDetail, setSelectedPromotionDetail] = useState(null); // State để quản lý promotion đã chọn
+    const currentUser = useSelector((state) => state?.auth.login?.currentUser);
 
     const handleOpenModal = () => {
         setModalVisible(true);
@@ -166,13 +168,6 @@ export default function Payment({ navigation, route }) {
 
             if (freeProductPromotion) {
                 setSelectedPromotionDetail(freeProductPromotion.code);
-                const { freeProductAdd } = calculateTotalWithPromotion(
-                    totalAmount,
-                    selectedPromotionDetail, // Sử dụng giá trị mới
-                    selectedFoods,
-                    data,
-                    products,
-                );
             } else {
                 // Nếu không có khuyến mãi tặng sản phẩm, tìm khuyến mãi type = 1 hoặc type = 2 có mức giảm nhiều nhất
                 const bestDiscountPromotion = data
@@ -188,14 +183,6 @@ export default function Payment({ navigation, route }) {
 
                     // setSelectedPromotion(bestDiscountPromotion.code);
                     setSelectedPromotionDetail(bestDiscountPromotion.code);
-                    const { newTotalPrice } = calculateTotalWithPromotion(
-                        totalAmount,
-                        selectedPromotionDetail, // Sử dụng giá trị mới
-                        selectedFoods,
-                        data,
-                        products,
-                    );
-                    console.log('newTotalPrice', newTotalPrice);
                 }
             }
         }
@@ -263,6 +250,7 @@ export default function Payment({ navigation, route }) {
     const handlePayment = async () => {
         try {
             if (!(await handleCheckStatusSeat())) {
+                stopTimer();
                 Alert.alert('Ghế đã được đặt, vui lòng chọn ghế khác');
                 navigation.navigate('Seat', { showtime: { ...showtime, check: true } });
                 return;
@@ -332,13 +320,12 @@ export default function Payment({ navigation, route }) {
             setLoading(true);
             const salesInvoice = {
                 staffCode: '',
-                customerCode: 'KH02',
+                customerCode: currentUser?.code,
                 scheduleCode: showtime?.code,
                 paymentMethod: 1,
                 type: 0,
                 salesInvoiceDetails: salesInvoiceDetails,
             };
-            console.log('salesInvoice', salesInvoice);
             const response = await axios.post(API_URL + '/api/sales-invoices/addWithDetail', salesInvoice);
             if (selectedPromotionDetail) {
                 const promotionResult = {
@@ -348,9 +335,7 @@ export default function Payment({ navigation, route }) {
                     freeQuantity: freeProductDetails?.freeQuantity,
                     discountAmount: totalAmount - newTotalPrice,
                 };
-                console.log('promotionResult', promotionResult);
                 const t = await axios.post(API_URL + '/api/promotion-results', promotionResult);
-                console.log('promotionResult111', t.data);
             }
 
             if (response.data) {
@@ -365,7 +350,15 @@ export default function Payment({ navigation, route }) {
                 const result = await axios.put(API_URL + '/api/seat-status-in-schedules', seat);
                 if (result.data) {
                     setLoading(false);
-                    Alert.alert('Đặt vé thành công');
+                    stopTimer();
+                    Alert.alert(
+                        'Thông báo',
+                        'Đặt vé thành công',
+                        [{ text: 'Đóng', onPress: () => console.log('OK Pressed') }],
+                        {
+                            cancelable: false,
+                        },
+                    );
 
                     navigation.navigate('TicketDetail', {
                         ticket: {
@@ -381,8 +374,7 @@ export default function Payment({ navigation, route }) {
                 }
             }
         } catch (error) {
-            console.error('Add sales invoice error:', error.message);
-            Alert.alert('Error', 'An error occurred while adding sales invoice');
+            Alert.alert('Thông báo', 'Lỗi khi thanh toán');
         }
     };
 
@@ -466,25 +458,34 @@ export default function Payment({ navigation, route }) {
             </View>
         );
     };
-    const handleSelectedPromotionDetail = (code) => {
-        setSelectedPromotionDetail(code);
-    };
-    const sortedData = (() => {
-        // Tính toán khả dụng của từng khuyến mãi một lần
-        const applicableFlags = data.map((promotion) => ({
-            ...promotion,
-            isApplicable: isPromotionApplicable(promotion),
-        }));
+    // const handleSelectedPromotionDetail = (code) => {
+    //     setSelectedPromotionDetail(code);
+    // };
+    const [sortedData, setSortedData] = useState([]);
 
-        // Sắp xếp dựa trên các điều kiện đã nêu
-        return applicableFlags.sort((a, b) => {
-            if (a.code === selectedPromotionDetail && !modalVisible) return -1; // a được chọn -> lên đầu
-            if (b.code === selectedPromotionDetail && !modalVisible) return 1; // b được chọn -> lên đầu
-            if (b.isApplicable && !a.isApplicable) return 1; // b có thể áp dụng -> lên trên a
-            if (!b.isApplicable && a.isApplicable) return -1; // a có thể áp dụng -> lên trên b
-            return 0; // Giữ nguyên thứ tự nếu cả hai đều không áp dụng hoặc đều áp dụng
-        });
-    })();
+    useEffect(() => {
+        if (!modalVisible) {
+            setLoading(true);
+
+            const applicableFlags = data.map((promotion) => ({
+                ...promotion,
+                isApplicable: isPromotionApplicable(promotion),
+            }));
+
+            const newSortedData = applicableFlags.sort((a, b) => {
+                if (a.code === selectedPromotionDetail) return -1; // Mục được chọn sẽ lên đầu
+                if (b.code === selectedPromotionDetail) return 1;
+                if (b.isApplicable && !a.isApplicable) return 1; // b có thể áp dụng -> lên trên a
+                if (!b.isApplicable && a.isApplicable) return -1; // a có thể áp dụng -> lên trên b
+                return 0; // Giữ nguyên thứ tự nếu cả hai đều không áp dụng hoặc đều áp dụng
+            });
+            setTimeout(() => {
+                setLoading(false);
+            }, 200);
+
+            setSortedData(newSortedData);
+        }
+    }, [modalVisible, data, selectedPromotionDetail]);
     const PromotionDetailItem = memo(({ item }) => {
         const handlePress = () => {
             if (item?.isApplicable) {
@@ -748,6 +749,7 @@ export default function Payment({ navigation, route }) {
                                             <TouchableOpacity
                                                 onPress={() => {
                                                     setModalVisible(false);
+                                                    setSelectedPromotionDetail(null);
                                                 }}
                                             >
                                                 <Text className="text-3xl text-pink-800 font-bold">✕</Text>
