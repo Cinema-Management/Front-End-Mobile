@@ -8,7 +8,6 @@ import {
     TouchableWithoutFeedback,
     RefreshControl,
     StyleSheet,
-    TouchableHighlight,
     Text,
     TouchableOpacity,
     Modal,
@@ -101,7 +100,6 @@ const Container = (props) => {
                         }}
                         icon={<FontAwesome name="angle-left" size={35} color={colors.white} />}
                         onPress={() => {
-                            // Điều hướng đến route mục tiêu
                             if (targetRoute) {
                                 if (openModalPayment) {
                                     setModalVisible(true);
@@ -115,7 +113,7 @@ const Container = (props) => {
                                     navigation.navigate(targetRoute, { showtime: showtimeValue });
                                 }
                             } else {
-                                navigation.goBack(); // Quay lại trang trước nếu không có targetRoute
+                                navigation.goBack();
                             }
                         }}
                     />
@@ -128,7 +126,7 @@ const Container = (props) => {
                         gap: 5,
                         marginLeft: back === true ? 7 : 0,
                     }}
-                    className={`${back === true && !right ? 'mr-6' : ''}`}
+                    className={`${back === true && !right ? 'mr-6' : 'pl-3'}`}
                 >
                     {title && <TextComponent text={title} size={20} styles={style} line={line} />}
                     {span && <TextComponent text={span} size={15} styles={styleSpan} />}
@@ -223,6 +221,9 @@ const Container = (props) => {
                                         refreshing={refreshing}
                                         onRefresh={handleRefresh}
                                         colors={['white', 'white']}
+                                        tintColor="white"
+                                        title="Đang tải lại..."
+                                        titleColor="white"
                                     />
                                 }
                             >
