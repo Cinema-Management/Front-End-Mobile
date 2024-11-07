@@ -18,7 +18,6 @@ const BottomTabs = ({ navigation }) => {
                 headerShown: false,
                 tabBarStyle: {
                     backgroundColor: '#21242C',
-                    // borderRadius: 100,
                     position: 'absolute',
                     borderTopWidth: 0,
                 },

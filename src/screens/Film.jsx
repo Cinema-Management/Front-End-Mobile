@@ -1,9 +1,16 @@
 import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, StyleSheet, TouchableWithoutFeedback, Modal } from 'react-native';
-import { Icon, Button } from 'react-native-elements';
+import {
+    View,
+    Text,
+    ScrollView,
+    TouchableOpacity,
+    StyleSheet,
+    TouchableWithoutFeedback,
+    Modal,
+    ActivityIndicator,
+} from 'react-native';
 import Container from '../components/Container';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
-import ButtonPrimary from '../components/ButtonPrimary';
 import { EvilIcons, Feather, FontAwesome } from '@expo/vector-icons';
 import { parseFormattedDateWithTime, generateDates, formatTime } from '../utils/Date';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
@@ -11,7 +18,6 @@ import { LinearGradient } from 'expo-linear-gradient';
 import dayjs from 'dayjs';
 import 'dayjs/locale/vi';
 import useSchedule from '../queries/useSchedule';
-import { ActivityIndicator } from 'react-native-paper';
 dayjs.locale('vi');
 const Film = ({ navigate, route }) => {
     const { item, showtime } = route.params || {};
