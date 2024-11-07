@@ -9,6 +9,7 @@ import {
     ScrollView,
     StyleSheet,
     TouchableOpacity,
+    ActivityIndicator,
 } from 'react-native';
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 import phim1 from '../../assets/phim1.png';
@@ -20,7 +21,6 @@ import { useSelector } from 'react-redux';
 var { height, width } = Dimensions.get('window');
 import { formatDateTicket } from '../utils/Date';
 import { TouchableWithoutFeedback } from 'react-native';
-import { ActivityIndicator } from 'react-native-paper';
 const MovieList = ({ movies, navigation, inactive }) => {
     return (
         <ScrollView style={{ flex: 1, marginBottom: 30 }} showsVerticalScrollIndicator={false}>
@@ -39,7 +39,7 @@ const MovieList = ({ movies, navigation, inactive }) => {
                             }}
                         >
                             <View className="absolute left-0 w-[3%] h-5 bg-black/70 rounded-r-full overflow-hidden shadow-2xl " />
-                            <View className="absolute right-0 w-[3%] h-5 bg-black/70 rounded-l-full overflow-hidden shadow-2xl  " />
+                            <View className="absolute right-[-1px] w-[3%] h-5 bg-black/70 rounded-l-full overflow-hidden shadow-2xl  " />
                             <Image
                                 source={{ uri: movie.scheduleCode.movieCode.image }}
                                 className=" rounded-[4px] "
@@ -111,10 +111,10 @@ export default function Ticket({ navigation }) {
     ]);
     const currentTime = new Date();
 
-    const sortedDataUpcoming = data?.sort((a, b) => {
+    const sortedDataUpcoming = data?.slice().sort((a, b) => {
         return new Date(a.scheduleCode.startTime) - new Date(b.scheduleCode.startTime);
     });
-    const sortedDataWatched = data?.sort((a, b) => {
+    const sortedDataWatched = data?.slice()?.sort((a, b) => {
         return new Date(b.scheduleCode.startTime) - new Date(a.scheduleCode.startTime);
     });
 

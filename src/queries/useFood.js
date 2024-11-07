@@ -25,6 +25,9 @@ const fetchFood = async (date) => {
 const useFood = (date) => {
     return useQuery(['food', date], () => fetchFood(date), {
         enabled: !!date, // Only run the query if scheduleCode is defined
+        staleTime: 1000 * 60 * 7, // 7 minutes
+        cacheTime: 1000 * 60 * 10, // 10 minutes
+        refetchInterval: 1000 * 60 * 7, // 7 minutes
         refetchOnWindowFocus: true,
     });
 };
