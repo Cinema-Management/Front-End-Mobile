@@ -26,7 +26,7 @@ const BannerCarousel = memo(({ banners }) => {
 
         return (
             <Animated.View style={[styles.bannerContainer, { transform: [{ translateX: translateX }] }]}>
-                <Animated.Image source={item.img} style={[styles.bannerImage]} />
+                <Animated.Image source={{ uri: item.img }} style={[styles.bannerImage]} resizeMode="stretch" />
             </Animated.View>
         );
     }, []);
