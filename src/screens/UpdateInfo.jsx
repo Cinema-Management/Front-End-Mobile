@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
     View,
     Text,
@@ -15,7 +15,6 @@ import {
     ActivityIndicator,
     Alert,
 } from 'react-native';
-import phim1 from '../../assets/phim1.png';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { AntDesign } from '@expo/vector-icons';
@@ -35,6 +34,7 @@ var { height, width } = Dimensions.get('window');
 import { API_URL } from '@env';
 import { updateUser } from '../redux/authSlice';
 import useAddress from '../queries/useAddress';
+import { useFocusEffect } from '@react-navigation/native';
 
 export default function UpdateInfo({ navigation }) {
     const currentUser = useSelector((state) => state.auth.login.currentUser);
@@ -51,7 +51,7 @@ export default function UpdateInfo({ navigation }) {
     const gender = currentUser.gender === 'Nam' ? items[0] : currentUser.gender === 'Nữ' ? items[1] : items;
     const [selectedGender, setSelectedGender] = useState(gender);
     const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
-    const [selectedDate, setSelectedDate] = useState(new Date(currentUser.birthDate));
+    const [selectedDate, setSelectedDate] = useState(currentUser.birthDate ? new Date(currentUser.birthDate) : '');
     const [selectedProvince, setSelectedProvince] = useState(null);
     const [selectedDistrict, setSelectedDistrict] = useState(null);
     const [selectedWard, setSelectedWard] = useState(null);
@@ -69,6 +69,15 @@ export default function UpdateInfo({ navigation }) {
         isLoading: isLoadingWards,
         isSuccess: isSuccessWards,
     } = useWards(selectedDistrict?.value);
+
+    useFocusEffect(
+        useCallback(() => {
+            setLoading(true);
+            setTimeout(() => {
+                setLoading(false);
+            }, 300);
+        }, []),
+    );
 
     // Update selectedProvince when address and provinces data is loaded
     useEffect(() => {
@@ -145,7 +154,6 @@ export default function UpdateInfo({ navigation }) {
             console.log('Người dùng đã hủy chọn hình ảnh.');
         }
     };
-    console.log('image', image);
     const showDatePicker = () => {
         setDatePickerVisibility(true);
     };
@@ -164,10 +172,10 @@ export default function UpdateInfo({ navigation }) {
     };
 
     const validate = async () => {
-        const customerResponse = await axios.get(API_URL + '/api/users');
-
-        const customers = customerResponse.data;
-        const checkEmail = customers.some((item) => item.email === emailRef.current);
+        const { data } = await axios.post(API_URL + '/api/users/checkPhoneOrEmailExist', {
+            email: emailRef.current,
+            type: 0,
+        });
         const emailRegex = /^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$/;
         if (emailRef.current === '') {
             Alert.alert('Email không được để trống');
@@ -179,12 +187,10 @@ export default function UpdateInfo({ navigation }) {
             return false;
         }
 
-        if (checkEmail && emailRef.current !== currentUser.email) {
+        if (data?.email && emailRef.current !== currentUser.email) {
             Alert.alert('Email đã tồn tại');
             return false;
         }
-        console.log('selectedProvince11', selectedProvince);
-        console.log('selectedDistrict11', selectedDistrict);
 
         if (!selectedDistrict?.label && selectedProvince) {
             Alert.alert('Vui lòng chọn quận/huyện');
@@ -205,8 +211,6 @@ export default function UpdateInfo({ navigation }) {
     };
     const handleUpdateInfo = async () => {
         try {
-            console.log('selectedProvince', selectedProvince);
-
             const isValid = await validate();
 
             // Nếu validate trả về false, ngừng hàm tại đây
@@ -218,10 +222,9 @@ export default function UpdateInfo({ navigation }) {
             const fullAddress = `${addressDetailRef.current || address?.addressDetail}, ${selectedWard?.label}, ${
                 selectedDistrict?.label
             }, ${selectedProvince?.label}`;
-            console.log('fullAddress', fullAddress);
 
             // Nếu địa chỉ mới khác địa chỉ cũ, tiến hành cập nhật địa chỉ
-            if (fullAddress !== address?.fullAddress) {
+            if (fullAddress !== address?.fullAddress && selectedProvince && selectedDistrict && selectedWard) {
                 const hierarchyValues = [
                     { name: selectedProvince?.label, level: 0 },
                     { name: selectedDistrict?.label, parentCode: '', level: 1 },
@@ -252,7 +255,9 @@ export default function UpdateInfo({ navigation }) {
 
             const user = {
                 name: nameRef.current || currentUser.name,
-                birthDate: `${selectedDate.getFullYear()}-${selectedDate.getMonth() + 1}-${selectedDate.getDate()}`,
+                birthDate: selectedDate
+                    ? `${selectedDate.getFullYear()}-${selectedDate.getMonth() + 1}-${selectedDate.getDate()}`
+                    : '',
                 gender: selectedGender?.label,
                 address: parentCode || currentUser?.address,
                 email: emailRef.current || currentUser?.email,
@@ -289,7 +294,7 @@ export default function UpdateInfo({ navigation }) {
                 throw new Error('Không thể cập nhật thông tin.');
             }
         } catch (error) {
-            Alert.alert('Có lỗi xảy ra khi cập nhật thông tin.');
+            Alert.alert('Có lỗi xảy ra khi cập nhật thông tin.', error.message);
             setLoading(false);
         }
     };
@@ -392,7 +397,7 @@ export default function UpdateInfo({ navigation }) {
                                                                 fontWeight: 'bold',
                                                             }}
                                                         >
-                                                            {selectedDate.toLocaleDateString()}
+                                                            {selectedDate.toLocaleDateString() || 'Chọn'}
                                                         </Text>
                                                     )}
                                                 </View>
@@ -437,7 +442,7 @@ export default function UpdateInfo({ navigation }) {
                                                         height: 30,
                                                         marginRight: 10,
                                                     }}
-                                                    activeColor="transparent"
+                                                    activeColor="rgba(205, 207, 212, 0.6)"
                                                     placeholderStyle={{
                                                         color: 'white',
                                                         textAlign: 'right',

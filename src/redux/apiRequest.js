@@ -17,12 +17,12 @@ export const loginUser = async (user, dispatch) => {
         return err;
     }
 };
-export const registerUser = async (user, dispatch, navigate) => {
+export const registerUser = async (user, dispatch) => {
     dispatch(loginStart());
     try {
-        const res = await axios.post('/api/auth/register', user);
+        const res = await axios.post(`${API_URL}/api/auth/register`, user);
         dispatch(loginSuccess(res.data));
-        navigate('/');
+        await AsyncStorage.setItem('user', JSON.stringify(res.data));
         return;
     } catch (err) {
         dispatch(loginFailed());

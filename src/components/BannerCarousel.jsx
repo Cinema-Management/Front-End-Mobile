@@ -6,30 +6,43 @@ const { width, height } = Dimensions.get('window');
 
 const BannerCarousel = memo(({ banners }) => {
     const [currentIndex, setCurrentIndex] = useState(0);
+    const scaleAnim = useRef(new Animated.Value(0)).current;
+    const opacityAnim = useRef(new Animated.Value(0)).current;
 
-    const renderItem = useCallback(({ item }) => {
-        const scale = new Animated.Value(0);
-        const opacity = new Animated.Value(0);
-        const translateX = useRef(new Animated.Value(0)).current;
-        // Animate the scale and opacity when the item is rendered
-        Animated.timing(scale, {
-            toValue: 1,
-            duration: 3000,
-            useNativeDriver: true,
-        }).start();
+    const renderItem = useCallback(
+        ({ item }) => {
+            // const scale = new Animated.Value(0);
+            // const opacity = new Animated.Value(0);
+            // const translateX = useRef(new Animated.Value(0)).current;
+            // Animate the scale and opacity when the item is rendered
+            Animated.timing(scaleAnim, {
+                toValue: 1,
+                duration: 2000,
+                useNativeDriver: true,
+            }).start();
 
-        Animated.timing(opacity, {
-            toValue: 1,
-            duration: 3000,
-            useNativeDriver: true,
-        }).start();
+            Animated.timing(opacityAnim, {
+                toValue: 1,
+                duration: 2000,
+                useNativeDriver: true,
+            }).start();
 
-        return (
-            <Animated.View style={[styles.bannerContainer, { transform: [{ translateX: translateX }] }]}>
-                <Animated.Image source={{ uri: item.img }} style={[styles.bannerImage]} resizeMode="stretch" />
-            </Animated.View>
-        );
-    }, []);
+            return (
+                <Animated.View
+                    style={[
+                        styles.bannerContainer,
+                        {
+                            opacity: opacityAnim,
+                            transform: [{ scale: scaleAnim }],
+                        },
+                    ]}
+                >
+                    <Animated.Image source={{ uri: item.img }} style={styles.bannerImage} resizeMode="stretch" />
+                </Animated.View>
+            );
+        },
+        [scaleAnim, opacityAnim],
+    );
 
     return (
         <View style={styles.carouselContainer}>
@@ -46,7 +59,21 @@ const BannerCarousel = memo(({ banners }) => {
             />
             <View style={styles.dotsContainer}>
                 {banners.map((_, index) => (
-                    <View key={index} style={[styles.dot, currentIndex === index ? styles.activeDot : null]} />
+                    <Animated.View
+                        key={index}
+                        style={[
+                            styles.dot,
+                            currentIndex === index ? styles.activeDot : null,
+                            {
+                                // Tạo hiệu ứng mở rộng khi active
+                                transform: [
+                                    {
+                                        scale: scaleAnim, // Sử dụng giá trị scale hợp lệ từ Animated.Value
+                                    },
+                                ],
+                            },
+                        ]}
+                    />
                 ))}
             </View>
         </View>
@@ -55,6 +82,7 @@ const BannerCarousel = memo(({ banners }) => {
 
 const styles = StyleSheet.create({
     carouselContainer: {
+        alignItems: 'center',
         flex: 1,
     },
     bannerContainer: {
@@ -74,7 +102,6 @@ const styles = StyleSheet.create({
 
         position: 'absolute',
         bottom: 5,
-        left: '50%',
     },
     dot: {
         width: 8,

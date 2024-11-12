@@ -3,6 +3,7 @@ import Loading from '../components/Loading';
 import MainNavigator from './MainNavigation';
 import LoginNavigator from './LoginNavigator';
 import { useSelector } from 'react-redux';
+import { StatusBar } from 'react-native';
 
 const StackNavigator = () => {
     const [isShowSplash, setIsShowSplash] = useState(true);
@@ -17,7 +18,12 @@ const StackNavigator = () => {
         };
     }, []);
 
-    return <>{isShowSplash ? <Loading /> : currentUser ? <MainNavigator /> : <LoginNavigator />}</>;
+    return (
+        <>
+            <StatusBar barStyle="light-content" backgroundColor="transparent" translucent />
+            {isShowSplash ? <Loading /> : currentUser ? <MainNavigator /> : <LoginNavigator />}
+        </>
+    );
 };
 
 export default StackNavigator;
