@@ -30,18 +30,23 @@ const Film = ({ navigate, route }) => {
     const [title, setTitle] = useState('Tất cả rạp');
     const [filterData, setFilterData] = useState([]);
     const [modalVisible, setModalVisible] = useState(false);
+    const [loading, setLoading] = useState(false);
+
     const handleDateSelection = (date) => {
         setSelectedDate(date.fullDate);
         setFilterData([]);
         setDisplayDate(date.fullDateString);
     };
 
-    const { data, isLoading, isSuccess, refetch } = useSchedule(item?.code || showtime?.movieCode, isoDate);
+    const { data, isLoading, isSuccess } = useSchedule(item?.code || showtime?.movieCode, isoDate);
 
     useFocusEffect(
         useCallback(() => {
-            refetch();
-        }, [refetch]),
+            setLoading(true);
+            setTimeout(() => {
+                setLoading(false);
+            }, 300);
+        }, [selectedDate]),
     );
 
     const toggleCinema = (index) => {
@@ -99,7 +104,7 @@ const Film = ({ navigate, route }) => {
                                 {cinema.name}
                             </Text>
                             <View className="flex-row justify-center items-center ">
-                                <Text className="mr-1 text-orange-500">2,1 Km</Text>
+                                {/* <Text className="mr-1 text-orange-500">2,1 Km</Text> */}
 
                                 {openCinemas[index] ? (
                                     <FontAwesome name="angle-up" size={25} color="white" style={{ marginTop: -3 }} />
@@ -168,68 +173,6 @@ const Film = ({ navigate, route }) => {
         ));
     };
 
-    const renderCinemasFilter = (cinema) => {
-        return cinema.map((cinema, index) => (
-            <View key={index} style={[styles.cinemaContainer, index === 0 ? styles.firstCinemaContainer : null]}>
-                <TouchableWithoutFeedback onPress={() => toggleCinema(index)}>
-                    <View>
-                        <View style={styles.cinemaHeader}>
-                            <Text style={styles.cinemaName} numberOfLines={1}>
-                                {cinema.name}
-                            </Text>
-                            <View className="flex-row justify-center items-center ">
-                                <Text className="mr-1 text-orange-500">2,1 Km</Text>
-
-                                {openCinemas[index] ? (
-                                    <FontAwesome name="angle-up" size={25} color="white" style={{ marginTop: -3 }} />
-                                ) : (
-                                    <FontAwesome name="angle-down" size={25} color="white" style={{ marginTop: -2 }} />
-                                )}
-                            </View>
-                        </View>
-                        <View className="flex-row items-center mb-2 ">
-                            <EvilIcons name="location" size={20} color="rgba(255, 255, 255, 0.5)" />
-                            <Text style={styles.cinemaAddress} numberOfLines={2}>
-                                {cinema.address}
-                            </Text>
-                        </View>
-                    </View>
-                </TouchableWithoutFeedback>
-
-                {openCinemas[index] && (
-                    <View>
-                        {cinema.screeningFormats.map((item, idx) => (
-                            <View key={idx} className="mb-2">
-                                <View className="flex-row items-center">
-                                    <Feather name="circle" size={11} color="orange" />
-                                    <Text
-                                        className="text-white text-[15px] font-light ml-1 uppercase"
-                                        numberOfLines={1}
-                                    >
-                                        {item.name} <Text className="text-[15px]"> Phụ đề </Text>
-                                        {item.subtitle}
-                                    </Text>
-                                </View>
-                                <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                                    <View className="flex-row py-2 ">
-                                        {item.showtimes.map((time, idx) => (
-                                            <TouchableOpacity
-                                                key={idx}
-                                                style={[styles.timeButton]}
-                                                onPress={() => navigation.navigate('Seat')}
-                                            >
-                                                <Text style={[styles.timeText]}>{formatTime(time.startTime)}</Text>
-                                            </TouchableOpacity>
-                                        ))}
-                                    </View>
-                                </ScrollView>
-                            </View>
-                        ))}
-                    </View>
-                )}
-            </View>
-        ));
-    };
     return (
         <Container
             isScroll={false}
@@ -244,7 +187,7 @@ const Film = ({ navigate, route }) => {
             line={1}
             right={true}
             titleRight={title}
-            styleRight={{ color: 'white', fontWeight: 300, fontSize: 14, textAlign: 'center' }}
+            styleRight={{ color: 'orange', fontWeight: 300, fontSize: 14, textAlign: 'center' }}
             onPress={() => setModalVisible(true)}
         >
             <View style={styles.container}>
@@ -294,7 +237,7 @@ const Film = ({ navigate, route }) => {
                         ))}
                     </ScrollView>
                 </View>
-                {isLoading ? (
+                {isLoading || loading ? (
                     <View style={styles.loadingContainer}>
                         <ActivityIndicator size="large" color="white" />
                     </View>

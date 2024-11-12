@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
+import React, { memo, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import {
     View,
     Text,
@@ -19,6 +19,8 @@ import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-nat
 import useMovieSchedule from '../queries/useMovieSchedule';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useFocusEffect } from '@react-navigation/native';
+import { TimerContext } from '../utils/TimerContext';
+
 const { width, height } = Dimensions.get('window');
 const CarouselComponent = memo(({ index, data, navigation }) => {
     const renderItem = useCallback(
@@ -89,6 +91,12 @@ const Home = memo(({ navigation }) => {
     const { data, isLoading, isSuccess, refetch, isRefetching } = useMovieSchedule(scheduleId);
     const [index, setIndex] = useState(1);
     const layout = useWindowDimensions();
+    const { stopTimer } = useContext(TimerContext);
+    useFocusEffect(
+        useCallback(() => {
+            stopTimer();
+        }, []),
+    );
     const handleIndexChange = (newIndex) => {
         let newScheduleId;
         switch (newIndex) {
@@ -113,7 +121,7 @@ const Home = memo(({ navigation }) => {
         refetch();
     };
     const banners = [
-        { id: 1, img: 'https://td-cinemas.s3.ap-southeast-1.amazonaws.com/ab.jpg' },
+        { id: 1, img: 'https://td-cinemas.s3.ap-southeast-1.amazonaws.com/1730992044159.jpg' },
         { id: 2, img: 'https://td-cinemas.s3.ap-southeast-1.amazonaws.com/happyday.jpg' },
         { id: 3, img: 'https://td-cinemas.s3.ap-southeast-1.amazonaws.com/BANNERP11-01.jpg' },
         { id: 4, img: 'https://td-cinemas.s3.ap-southeast-1.amazonaws.com/zalopay.jpg' },

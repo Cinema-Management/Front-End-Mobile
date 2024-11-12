@@ -116,6 +116,7 @@ export const TimerProvider = ({ children, timerId = 'abd', initialSeconds = 10 *
     const nextTimer = () => {
         setIsActive(true);
     };
+    console.log('seconds', seconds);
     return (
         <TimerContext.Provider
             value={{

@@ -147,7 +147,7 @@ export default function SignInEmail({ navigation }) {
                                 <FontAwesome name="user-o" size={15} color="white" />
                                 <TextInput
                                     placeholder="Số điện thoại"
-                                    placeholderTextColor="white"
+                                    placeholderTextColor="gray"
                                     defaultValue={phoneRef.current}
                                     onChangeText={handleChangeSDT}
                                     keyboardType="phone-pad"
@@ -161,7 +161,7 @@ export default function SignInEmail({ navigation }) {
                                 <AntDesign name="lock" size={15} color="white" />
                                 <TextInput
                                     placeholder="Mật khẩu"
-                                    placeholderTextColor="white"
+                                    placeholderTextColor="gray"
                                     defaultValue={passWord.current}
                                     onChangeText={handleChangePass}
                                     secureTextEntry={passWord ? !showPass : false}
@@ -210,15 +210,13 @@ export default function SignInEmail({ navigation }) {
                             </Text>
                         </TouchableOpacity>
 
-                        <View className="items-center mt-5">
-                            <Text className="text-sm text-white font-bold">
+                        <View className="items-center mt-10">
+                            <Text
+                                className="text-sm text-white font-bold"
+                                onPress={() => navigation.navigate('Register')}
+                            >
                                 Không có tài khoản?
-                                <Text
-                                    className="text-[#F6D365] font-bold"
-                                    onPress={() => navigation.navigate('Register')}
-                                >
-                                    Đăng ký
-                                </Text>
+                                <Text className="text-[#F6D365] font-bold">Đăng ký</Text>
                             </Text>
                         </View>
                     </View>
