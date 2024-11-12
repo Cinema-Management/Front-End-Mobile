@@ -10,7 +10,7 @@ var { height, width } = Dimensions.get('window');
 const FirstRoute = () => (
     <ScrollView style={{ flex: 1, marginBottom: 30 }} showsVerticalScrollIndicator={false}>
         <View className="items-center my-6 space-y-3 py-2">
-            <View
+            {/* <View
                 className="flex-row items-center justify-center h-24 rounded-xl px-4"
                 style={{ width: width * 0.9, backgroundColor: colors.backgroundColor }}
             >
@@ -33,7 +33,8 @@ const FirstRoute = () => (
                 <View className="flex-1 ml-3">
                     <Text className="text-white text-base font-bold">Giá ưu đãi cho học sinh, sinh viên</Text>
                 </View>
-            </View>
+            </View> */}
+            <Text className="text-white text-base">Chức năng chưa phát triển</Text>
         </View>
     </ScrollView>
 );
@@ -41,7 +42,7 @@ const FirstRoute = () => (
 const SecondRoute = () => (
     <ScrollView style={{ flex: 1, marginBottom: 30 }} showsVerticalScrollIndicator={false}>
         <View className="items-center my-6 space-y-3 py-2">
-            <View
+            {/* <View
                 className="flex-row items-center justify-center h-24 rounded-xl px-4"
                 style={{ width: width * 0.9, backgroundColor: colors.backgroundColor }}
             >
@@ -49,7 +50,8 @@ const SecondRoute = () => (
                 <View className="flex-1 ml-3">
                     <Text className="text-white text-base font-bold ">Mừng ngày 2/9 khuyến mãi lớn</Text>
                 </View>
-            </View>
+            </View> */}
+            <Text className="text-white text-base">Chức năng chưa phát triển</Text>
         </View>
     </ScrollView>
 );

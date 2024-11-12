@@ -179,8 +179,6 @@ export default function Payment({ navigation, route }) {
                     }, null);
 
                 if (bestDiscountPromotion) {
-                    console.log('bestDiscountPromotion', bestDiscountPromotion);
-
                     // setSelectedPromotion(bestDiscountPromotion.code);
                     setSelectedPromotionDetail(bestDiscountPromotion.code);
                 }
@@ -263,12 +261,6 @@ export default function Payment({ navigation, route }) {
 
             const arrayCode = selectedSeats.map((t) => t.code);
 
-            const body = {
-                scheduleCode: showtime?.code,
-                arrayCode: arrayCode,
-                expire_duration_seconds: seconds,
-            };
-            console.log('seat111', body);
             setLoading(true);
 
             // Gửi yêu cầu đến API thanh toán
@@ -292,7 +284,6 @@ export default function Payment({ navigation, route }) {
                 Alert.alert('Lỗi', 'Hệ thống thanh toán!');
             }
         } catch (error) {
-            console.error('Payment Error:', error);
             setLoading(false);
 
             Alert.alert('Lỗi', 'Hệ thống thanh toán!');
@@ -382,6 +373,9 @@ export default function Payment({ navigation, route }) {
         onSuccess: () => {
             queryClient.refetchQueries('TicketByCustomerCode');
             queryClient.refetchQueries('seatStatus');
+
+            queryClient.refetchQueries('spendingForCurrentYear');
+            
         },
     });
 
@@ -399,7 +393,6 @@ export default function Payment({ navigation, route }) {
 
                     const response = await axios.post(API_URL + '/api/app/order-status/' + apptransid);
                     // Thêm các thông tin cần thiết như appID, checksum nếu cần
-                    console.log('setReturnCode', response.data?.return_code);
                     setReturnCode(response.data?.return_code);
                     if (response.data?.return_code === 1) {
                         mutationPay.mutate();
@@ -483,7 +476,9 @@ export default function Payment({ navigation, route }) {
                 setLoading(false);
             }, 200);
 
-            setSortedData(newSortedData);
+            if (!modalVisible && JSON.stringify(newSortedData) !== JSON.stringify(sortedData)) {
+                setSortedData(newSortedData);
+            }
         }
     }, [modalVisible, data, selectedPromotionDetail]);
     const PromotionDetailItem = memo(({ item }) => {

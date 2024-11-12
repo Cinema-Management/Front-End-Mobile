@@ -104,7 +104,7 @@ export default function ChangePassword() {
                     />
                     <View className=" flex-1 ">
                         <InputComponent
-                            title="Mật khẩu hiện tại"
+                            title="Mật khẩu cũ"
                             placeholder="Nhập"
                             placeholderColor="gray"
                             value={currentPassword}

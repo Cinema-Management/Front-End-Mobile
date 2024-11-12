@@ -31,9 +31,14 @@ const Seat = memo(({ navigation, route }) => {
     const [modalVisible, setModalVisible] = useState(false);
     const [modalVisibleSelected, setModalVisibleSelected] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [message, setMessage] = useState('');
 
     useFocusEffect(
         useCallback(() => {
+            setLoading(true);
+            setTimeout(() => {
+                setLoading(false);
+            }, 500);
             refetch();
         }, [refetch]),
     );
@@ -43,7 +48,59 @@ const Seat = memo(({ navigation, route }) => {
     //         refetch();
     //     }
     // }, [showtime]);
+    function checkSeatsSelection(seats, selectedSeats) {
+        let isValid = true;
+        if (selectedSeats.length === 0) {
+            return false;
+        }
 
+        // Lọc ghế theo từng hàng
+        const rows = [];
+        seats.forEach((seat) => {
+            if (!rows[seat.row]) {
+                rows[seat.row] = [];
+            }
+            rows[seat.row].push(seat);
+        });
+
+        // Kiểm tra ghế trong từng hàng
+        selectedSeats.forEach((selectedSeat) => {
+            const rowSeats = rows[selectedSeat.row];
+
+            // Sắp xếp các ghế trong hàng theo cột
+            rowSeats.sort((a, b) => a.column - b.column);
+
+            // Kiểm tra các ghế đã chọn trong hàng
+            const selectedRowSeats = selectedSeats.filter((seat) => seat.row === selectedSeat.row);
+
+            selectedRowSeats.sort((a, b) => a.column - b.column);
+
+            // Kiểm tra nếu có ghế trống nằm giữa các ghế đã chọn
+            for (let i = 0; i < selectedRowSeats.length - 1; i++) {
+                const leftSeat = selectedRowSeats[i];
+                const rightSeat = selectedRowSeats[i + 1];
+
+                // Kiểm tra nếu có ghế trống nằm giữa
+                let gap = 0; // Đếm số ghế trống giữa các ghế đã chọn
+                for (let column = leftSeat.column + 1; column < rightSeat.column; column++) {
+                    const seat = rowSeats.find((s) => s.column === column);
+                    if (seat && seat.status === 1) {
+                        gap++; // Tăng số ghế trống nếu có
+                    }
+                }
+
+                // Nếu có 1 ghế trống, cảnh báo
+                if (gap === 1) {
+                    setMessage('Ở giữa các ghế đã chọn có 1 ghế trống.');
+                    setModalVisible(true);
+
+                    isValid = false;
+                }
+            }
+        });
+
+        return isValid; // Nếu không có ghế trống ở giữa, trả về true
+    }
     const handleSelectSeat = (seat) => {
         setSelectedSeats((prev) => {
             let updatedSeats;
@@ -57,6 +114,7 @@ const Seat = memo(({ navigation, route }) => {
             } else {
                 // Nếu số lượng ghế đã chọn đạt giới hạn (8), hiển thị modal và dừng thao tác
                 if (prev.length >= 8) {
+                    setMessage('Bạn chỉ chọn tối đa 8 ghế.');
                     setModalVisible(true);
                     return prev; // Trả về danh sách ghế cũ, không thêm mới
                 }
@@ -107,7 +165,7 @@ const Seat = memo(({ navigation, route }) => {
                 if (seat.statusSeat === 0) {
                     return '#F5EE76';
                 }
-                return 'rgba(255, 255, 255,0.8)';
+                return 'rgba(255, 255, 255,0.7)';
         }
     };
     const SeatItem = ({ image, name, seatNumber, seat }) => {
@@ -156,14 +214,25 @@ const Seat = memo(({ navigation, route }) => {
     };
     const handlePress = async () => {
         if (selectedSeats.length === 0) {
-            setModalVisibleSelected(true);
+            setMessage('Vui lòng chọn ít nhất 1 ghế');
+            setModalVisible(true);
             return;
-        } else {
-            updateStatusSeat(selectedSeats, 2, showtime?.code);
-
-            const data1 = selectedSeats.map((seat) => ({ ...seat, status: 2 }));
-            navigation.navigate('Food', { selectedSeats: data1, showtime });
         }
+
+        // Kiểm tra tính hợp lệ của việc chọn ghế
+        const isValid = await checkSeatsSelection(data, selectedSeats);
+        console.log('isValid', isValid);
+
+        // Nếu không hợp lệ (isValid là false), thì không làm gì thêm
+        if (!isValid) {
+            return;
+        }
+
+        // Nếu hợp lệ, cập nhật trạng thái ghế và chuyển màn
+        updateStatusSeat(selectedSeats, 2, showtime?.code);
+
+        const data1 = selectedSeats.map((seat) => ({ ...seat, status: 2 }));
+        navigation.navigate('Food', { selectedSeats: data1, showtime });
     };
 
     return (
@@ -388,43 +457,15 @@ const Seat = memo(({ navigation, route }) => {
                             {/* Nội dung modal */}
                             <View className="bg-white  rounded-lg " style={{ height: hp(10), width: wp(60) }}>
                                 <View
-                                    style={{ height: hp(5), width: wp(60) }}
+                                    style={{ height: hp(7), width: wp(60) }}
                                     className="justify-center items-center border-b-[0.5px] border-gray-300"
                                 >
-                                    <Text className="text-sm">Bạn chỉ chọn tối đa 8 ghế</Text>
+                                    <Text className="text-sm text-center">{message}</Text>
                                 </View>
 
                                 <TouchableHighlight
                                     style={{ height: hp(5), width: wp(60) }}
                                     onPress={() => setModalVisible(false)}
-                                    className="justify-center items-center bg-white rounded-b-lg "
-                                    underlayColor="#DDDDDD"
-                                >
-                                    <Text className="text-red-500 text-center">Đóng</Text>
-                                </TouchableHighlight>
-                            </View>
-                        </View>
-                    </Modal>
-
-                    <Modal
-                        animationType="none"
-                        transparent={true}
-                        visible={modalVisibleSelected}
-                        onRequestClose={() => setModalVisibleSelected(false)}
-                    >
-                        <View className="  flex-1 justify-center items-center bg-black/30  ">
-                            {/* Nội dung modal */}
-                            <View className="bg-white  rounded-lg " style={{ height: hp(10), width: wp(60) }}>
-                                <View
-                                    style={{ height: hp(5), width: wp(60) }}
-                                    className="justify-center items-center border-b-[0.5px] border-gray-300"
-                                >
-                                    <Text className="text-sm">Xin chọn ít nhất 1 ghế</Text>
-                                </View>
-
-                                <TouchableHighlight
-                                    style={{ height: hp(5), width: wp(60) }}
-                                    onPress={() => setModalVisibleSelected(false)}
                                     className="justify-center items-center bg-white rounded-b-lg "
                                     underlayColor="#DDDDDD"
                                 >
