@@ -1,7 +1,18 @@
 import React, { useEffect } from 'react';
 import { View, Text, Image, StyleSheet, Dimensions } from 'react-native';
-import Animated, { Easing, useSharedValue, useAnimatedStyle, withTiming, withRepeat } from 'react-native-reanimated';
-
+import Animated, {
+    Easing,
+    useSharedValue,
+    useAnimatedStyle,
+    withTiming,
+    withRepeat,
+    configureReanimatedLogger,
+    ReanimatedLogLevel,
+} from 'react-native-reanimated';
+configureReanimatedLogger({
+    level: ReanimatedLogLevel.warn,
+    strict: false, // Reanimated runs in strict mode by default
+});
 const Loading = () => {
     const opacity = useSharedValue(0);
 

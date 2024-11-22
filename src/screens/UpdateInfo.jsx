@@ -149,6 +149,14 @@ export default function UpdateInfo({ navigation }) {
 
         if (!result.canceled) {
             const selectedImageUri = result.assets[0].uri;
+            const fileInfo = await FileSystem.getInfoAsync(selectedImageUri);
+
+            const maxFileSize = 5 * 1024 * 1024; // 5MB
+
+            if (fileInfo.size > maxFileSize) {
+                Alert.alert('Kích thước file quá lớn, vui lòng chọn file nhỏ hơn 5MB.');
+                return;
+            }
             setImage(selectedImageUri);
         } else {
             console.log('Người dùng đã hủy chọn hình ảnh.');
@@ -231,7 +239,6 @@ export default function UpdateInfo({ navigation }) {
                     { name: selectedWard?.label, parentCode: '', level: 2 },
                     { name: addressDetailRef.current, parentCode: '', level: 3 },
                 ];
-                console.log(hierarchyValues);
 
                 for (let i = 0; i < hierarchyValues.length; i++) {
                     const { name, level } = hierarchyValues[i];

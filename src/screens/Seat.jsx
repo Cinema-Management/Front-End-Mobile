@@ -281,11 +281,14 @@ const Seat = memo(({ navigation, route }) => {
                             }}
                         >
                             <View className=" flex-1" style={{ height: hp(70) }}>
-                                <Image
-                                    source={screen}
-                                    style={{ width: wp(80), height: hp(20), margin: 'auto' }}
-                                    resizeMode="contain"
-                                />
+                                <View style={{ width: wp(80), height: hp(20), margin: 'auto' }}>
+                                    <Image
+                                        source={screen}
+                                        style={{ width: wp(80), height: hp(20), margin: 'auto' }}
+                                        resizeMode="contain"
+                                    />
+                                </View>
+
                                 <View className=" items-center flex-1  justify-center  ">
                                     <FlatList
                                         scrollEnabled={false}

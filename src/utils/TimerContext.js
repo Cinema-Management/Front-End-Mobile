@@ -84,18 +84,20 @@ export const TimerProvider = ({ children, timerId = 'abd', initialSeconds = 10 *
         }, [loadRemainingTime]),
     );
 
-    useEffect(() => {
-        const subscription = AppState.addEventListener('change', (nextAppState) => {
-            if (appState.match(/inactive|background/) && nextAppState === 'active') {
-                loadRemainingTime();
-            }
-            setAppState(nextAppState);
-        });
+    useFocusEffect(
+        useCallback(() => {
+            const subscription = AppState.addEventListener('change', (nextAppState) => {
+                if (appState.match(/inactive|background/) && nextAppState === 'active') {
+                    loadRemainingTime();
+                }
+                setAppState(nextAppState);
+            });
 
-        return () => {
-            subscription.remove();
-        };
-    }, [appState, loadRemainingTime]);
+            return () => {
+                subscription.remove();
+            };
+        }, [appState, loadRemainingTime]),
+    );
 
     const startTimer = () => {
         setSeconds(initialSeconds);
@@ -116,7 +118,7 @@ export const TimerProvider = ({ children, timerId = 'abd', initialSeconds = 10 *
     const nextTimer = () => {
         setIsActive(true);
     };
-    console.log('seconds', seconds);
+    // console.log('seconds', seconds);
     return (
         <TimerContext.Provider
             value={{
