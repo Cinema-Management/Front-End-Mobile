@@ -16,10 +16,9 @@ const Food = ({ route, navigation }) => {
     const { data = [], isLoading, isSuccess, refetch } = useFood(showtime?.date);
     const [quantities, setQuantities] = useState({});
     const [selectedFoods, setSelectedFoods] = useState([]);
-    const { seconds, startTimer, resetTimer, setShowtime, setSelectedSeats, nextTimer } = useContext(TimerContext);
+    const { seconds, startTimer, resetTimer, setShowtime, setSelectedSeats } = useContext(TimerContext);
 
     const [loading, setLoading] = useState(false);
-
     useFocusEffect(
         useCallback(() => {
             setShowtime(showtime);
@@ -31,6 +30,7 @@ const Food = ({ route, navigation }) => {
             setTimeout(() => {
                 setLoading(false);
             }, 500);
+            return () => {};
         }, [refetch]),
     );
 

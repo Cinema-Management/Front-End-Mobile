@@ -30,7 +30,6 @@ import { TimerContext } from '../utils/TimerContext'; // Đường dẫn tới T
 import { formatTimer } from '../utils/Date';
 import { useFocusEffect } from '@react-navigation/native';
 import usePromotionDetail from '../queries/usePromotionDetail';
-import voucher from '../../assets/voucher.png';
 import { useSelector } from 'react-redux';
 export default function Payment({ navigation, route }) {
     const { selectedSeats, selectedFoods, showtime, totalAmount, products } = route.params;
@@ -39,10 +38,9 @@ export default function Payment({ navigation, route }) {
     const { seconds, setReturnCode, stopTimer } = useContext(TimerContext);
     const [open, setOpen] = useState(true);
     const [modalVisible, setModalVisible] = useState(false);
-    const { data = [], isLoading, isSuccess } = usePromotionDetail(showtime?.date);
+    const { data = [], isLoading, isSuccess, refetch } = usePromotionDetail(showtime?.date);
     const [selectedPromotionDetail, setSelectedPromotionDetail] = useState(null); // State để quản lý promotion đã chọn
     const currentUser = useSelector((state) => state?.auth.login?.currentUser);
-
     const handleOpenModal = () => {
         setModalVisible(true);
     };
@@ -161,42 +159,50 @@ export default function Payment({ navigation, route }) {
     };
     useEffect(() => {
         if (data && data.length > 0) {
-            // Tìm khuyến mãi type = 0 (tặng sản phẩm miễn phí)
-            const freeProductPromotion = data.find(
-                (promotion) => promotion.type === 0 && isPromotionApplicable(promotion),
-            );
-
-            if (freeProductPromotion) {
-                setSelectedPromotionDetail(freeProductPromotion.code);
-            } else {
-                // Nếu không có khuyến mãi tặng sản phẩm, tìm khuyến mãi type = 1 hoặc type = 2 có mức giảm nhiều nhất
-                const bestDiscountPromotion = data
-                    .filter((promotion) => promotion.type === 1 || promotion.type === 2)
-                    .reduce((best, current) => {
-                        const currentDiscount = calculateDiscount(current, totalAmount);
-                        const bestDiscount = best ? calculateDiscount(best, totalAmount) : 0;
-                        return currentDiscount > bestDiscount ? current : best;
-                    }, null);
-
-                if (bestDiscountPromotion) {
-                    // setSelectedPromotion(bestDiscountPromotion.code);
-                    setSelectedPromotionDetail(bestDiscountPromotion.code);
+            // Hàm tính giá trị khuyến mãi
+            const calculatePromotionValue = (promotion) => {
+                if (promotion.type === 0) {
+                    // Loại tặng sản phẩm miễn phí
+                    const freeProduct = products.find((product) => product.productCode === promotion.freeProductCode);
+                    return freeProduct ? freeProduct.price * promotion.freeQuantity : 0;
+                } else if (promotion.type === 1 || promotion.type === 2) {
+                    // Loại giảm giá
+                    return promotion.discountAmount || 0;
                 }
+                return 0;
+            };
+
+            // Tìm khuyến mãi có lợi nhất
+            const bestPromotion = data.reduce((best, current) => {
+                // Kiểm tra nếu khuyến mãi áp dụng được
+                const isApplicable = isPromotionApplicable(current, totalAmount, selectedFoods);
+
+                if (!isApplicable) return best;
+
+                // Tính giá trị khuyến mãi
+                const currentValue = calculatePromotionValue(current);
+                const bestValue = best ? calculatePromotionValue(best) : 0;
+
+                return currentValue > bestValue ? current : best;
+            }, null);
+
+            // Đặt mã khuyến mãi nếu tìm thấy
+            if (bestPromotion) {
+                setSelectedPromotionDetail(bestPromotion.code);
             }
         }
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [data, totalAmount, selectedFoods]);
+    }, [data, totalAmount, selectedFoods, products]);
 
     const queryClient = useQueryClient();
     useFocusEffect(
         useCallback(() => {
             setLoading(true);
-
             setTimeout(() => {
                 setLoading(false);
-            }, 500);
-        }, []),
+            }, 1000);
+        }, [selectedFoods, selectedSeats]),
     );
     useEffect(() => {
         if (seconds < 1) {
@@ -375,7 +381,6 @@ export default function Payment({ navigation, route }) {
             queryClient.refetchQueries('seatStatus');
 
             queryClient.refetchQueries('spendingForCurrentYear');
-            
         },
     });
 
@@ -494,14 +499,18 @@ export default function Payment({ navigation, route }) {
         };
 
         return (
-            <TouchableOpacity onPress={handlePress}>
+            <TouchableOpacity onPress={handlePress} disabled={!item?.isApplicable}>
                 <View
                     className={`flex-row my-2 border-0.5 border-l-0 border-gray-300   ${
                         item.isApplicable ? '' : ' opacity-50'
                     }`}
                 >
                     <View className="w-[25%]  ">
-                        <Image source={voucher} style={{ width: 'auto', height: hp(10) }} resizeMode="stretch" />
+                        <Image
+                            source={{ uri: 'https://td-cinemas.s3.ap-southeast-1.amazonaws.com/1731855236786.png' }}
+                            style={{ width: 'auto', height: hp(10) }}
+                            resizeMode="stretch"
+                        />
                     </View>
                     <View className="flex-1  pl-2 my-1">
                         {/* <Text>{item.code}</Text> */}
@@ -568,9 +577,9 @@ export default function Payment({ navigation, route }) {
             style={{ color: 'white', fontWeight: 700 }}
         >
             {(loading || isLoading) && (
-                <ActivityIndicator size="large" color="white" className="flex-1 items-center justify-center" />
+                <ActivityIndicator size="large" color="white" className="h-[100%] w-[100%] absolute z-50 bg-black/50" />
             )}
-            {!loading && isSuccess && (
+            {isSuccess && (
                 <View className=" flex-1">
                     <View className="bg-orange-400  absolute w-full justify-center items-center top-0 z-50 ">
                         {/* <Timer
