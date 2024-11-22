@@ -577,9 +577,9 @@ export default function Payment({ navigation, route }) {
             style={{ color: 'white', fontWeight: 700 }}
         >
             {(loading || isLoading) && (
-                <ActivityIndicator size="large" color="white" className="flex-1 items-center justify-center" />
+                <ActivityIndicator size="large" color="white" className="h-[100%] w-[100%] absolute z-50 bg-black/50" />
             )}
-            {!loading && isSuccess && (
+            {isSuccess && (
                 <View className=" flex-1">
                     <View className="bg-orange-400  absolute w-full justify-center items-center top-0 z-50 ">
                         {/* <Timer

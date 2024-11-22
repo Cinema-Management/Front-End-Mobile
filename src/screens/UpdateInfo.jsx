@@ -149,14 +149,14 @@ export default function UpdateInfo({ navigation }) {
 
         if (!result.canceled) {
             const selectedImageUri = result.assets[0].uri;
-            const fileInfo = await FileSystem.getInfoAsync(selectedImageUri);
+            // const fileInfo = await FileSystem.getInfoAsync(selectedImageUri);
 
-            const maxFileSize = 5 * 1024 * 1024; // 5MB
+            // const maxFileSize = 5 * 1024 * 1024; // 5MB
 
-            if (fileInfo.size > maxFileSize) {
-                Alert.alert('Kích thước file quá lớn, vui lòng chọn file nhỏ hơn 5MB.');
-                return;
-            }
+            // if (fileInfo.size > maxFileSize) {
+            //     Alert.alert('Kích thước file quá lớn, vui lòng chọn file nhỏ hơn 5MB.');
+            //     return;
+            // }
             setImage(selectedImageUri);
         } else {
             console.log('Người dùng đã hủy chọn hình ảnh.');
@@ -309,10 +309,10 @@ export default function UpdateInfo({ navigation }) {
     return (
         <Container isScroll={false} title="Thông tin tài khoản" back={true} style={{ color: 'white', fontWeight: 700 }}>
             {(isLoadingAddress || loading) && (
-                <ActivityIndicator size="large" color="white" className="flex-1 items-center justify-center" />
+                <ActivityIndicator size="large" color="white" className="h-[100%] w-[100%] absolute z-50 bg-black/50" />
             )}
 
-            {!loading && !isLoadingAddress && (
+            {!isLoadingAddress && (
                 <View style={styles.main}>
                     <KeyboardAvoidingView
                         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
