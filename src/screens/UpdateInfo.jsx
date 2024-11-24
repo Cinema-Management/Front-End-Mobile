@@ -30,7 +30,6 @@ import useProvinces from '../queries/useProvinces';
 import useDistricts from '../queries/useDistricts';
 import useWards from '../queries/useWards';
 
-var { height, width } = Dimensions.get('window');
 import { API_URL } from '@env';
 import { updateUser } from '../redux/authSlice';
 import useAddress from '../queries/useAddress';
@@ -149,6 +148,7 @@ export default function UpdateInfo({ navigation }) {
 
         if (!result.canceled) {
             const selectedImageUri = result.assets[0].uri;
+
             setImage(selectedImageUri);
         } else {
             console.log('Người dùng đã hủy chọn hình ảnh.');
@@ -231,7 +231,6 @@ export default function UpdateInfo({ navigation }) {
                     { name: selectedWard?.label, parentCode: '', level: 2 },
                     { name: addressDetailRef.current, parentCode: '', level: 3 },
                 ];
-                console.log(hierarchyValues);
 
                 for (let i = 0; i < hierarchyValues.length; i++) {
                     const { name, level } = hierarchyValues[i];
@@ -282,10 +281,6 @@ export default function UpdateInfo({ navigation }) {
                 },
             });
 
-            // formData.append('userData', JSON.stringify(user)); // Thêm các thông tin user vào formData
-
-            // const result = await axios.put(API_URL + '/api/users/' + currentUser?.code, user);
-
             if (data) {
                 Alert.alert('Cập nhật thành công');
                 dispatch(updateUser(data)); // Cập nhật state trong Redux
@@ -300,12 +295,17 @@ export default function UpdateInfo({ navigation }) {
     };
 
     return (
-        <Container isScroll={false} title="Thông tin tài khoản" back={true} style={{ color: 'white', fontWeight: 700 }}>
+        <Container back={true} isScroll={false} title="Thông tin tài khoản" style={{ color: 'white', fontWeight: 700 }}>
             {(isLoadingAddress || loading) && (
-                <ActivityIndicator size="large" color="white" className="flex-1 items-center justify-center" />
+                <ActivityIndicator
+                    size="large"
+                    color="white"
+                    className="absolute z-50 bg-black/50 -top-16"
+                    style={{ height: hp(100), width: wp(100) }}
+                />
             )}
 
-            {!loading && !isLoadingAddress && (
+            {!isLoadingAddress && (
                 <View style={styles.main}>
                     <KeyboardAvoidingView
                         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}

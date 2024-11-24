@@ -1,7 +1,19 @@
 import React, { useEffect } from 'react';
 import { View, Text, Image, StyleSheet, Dimensions } from 'react-native';
-import Animated, { Easing, useSharedValue, useAnimatedStyle, withTiming, withRepeat } from 'react-native-reanimated';
-
+import Animated, {
+    Easing,
+    useSharedValue,
+    useAnimatedStyle,
+    withTiming,
+    withRepeat,
+    configureReanimatedLogger,
+    ReanimatedLogLevel,
+} from 'react-native-reanimated';
+import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
+configureReanimatedLogger({
+    level: ReanimatedLogLevel.warn,
+    strict: false, // Reanimated runs in strict mode by default
+});
 const Loading = () => {
     const opacity = useSharedValue(0);
 
@@ -52,7 +64,11 @@ const Loading = () => {
     return (
         <View style={styles.container}>
             <Animated.View style={[styles.animatedContainer, animatedStyle]}>
-                <Image source={require('../../assets/logo.png')} style={styles.image} resizeMode="contain" />
+                <Image
+                    source={require('../../assets/logo.png')}
+                    resizeMode="stretch"
+                    style={{ height: hp(15), width: wp(45) }}
+                />
                 <Text style={styles.text}>TD Cinemas</Text>
             </Animated.View>
             <View style={styles.dotsContainer}>
@@ -77,7 +93,7 @@ const styles = StyleSheet.create({
     },
     text: {
         color: '#fff',
-        fontSize: 20,
+        fontSize: 18,
         marginTop: 10,
         fontWeight: 'bold',
     },
