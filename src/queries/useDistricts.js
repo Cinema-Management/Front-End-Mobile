@@ -4,8 +4,6 @@ import { API_URL } from '@env';
 
 // Hàm fetch dữ liệu quận/huyện
 const fetchDistricts = async (provinceCode) => {
-    console.log('provinceCode111', provinceCode);
-
     if (!provinceCode || provinceCode === null) return [];
     try {
         const { data } = await axios.get(`${API_URL}/api/locations/districts/${provinceCode}`);

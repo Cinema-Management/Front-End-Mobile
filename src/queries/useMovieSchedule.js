@@ -4,7 +4,6 @@ import { API_URL } from '@env';
 
 const fetchMovieHome = async (status) => {
     try {
-        console.log('URLHome', API_URL);
         const response = await axios.get(`${API_URL}/api/schedules/getAllMovieWithSchedules?status=${status}`);
         const data = response.data;
 
