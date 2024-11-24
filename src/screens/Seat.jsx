@@ -221,7 +221,6 @@ const Seat = memo(({ navigation, route }) => {
 
         // Kiểm tra tính hợp lệ của việc chọn ghế
         const isValid = await checkSeatsSelection(data, selectedSeats);
-        console.log('isValid', isValid);
 
         // Nếu không hợp lệ (isValid là false), thì không làm gì thêm
         if (!isValid) {

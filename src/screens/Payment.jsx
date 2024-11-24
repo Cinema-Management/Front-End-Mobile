@@ -255,8 +255,10 @@ export default function Payment({ navigation, route }) {
         try {
             if (!(await handleCheckStatusSeat())) {
                 stopTimer();
-                Alert.alert('Ghế đã được đặt, vui lòng chọn ghế khác');
-                navigation.navigate('Seat', { showtime: { ...showtime, check: true } });
+                Alert.alert('Thông báo', 'Ghế này đã được đặt', [{ text: 'Đóng' }], {
+                    cancelable: false,
+                });
+                navigation.navigate('Film', { showtime: { ...showtime, check: true } });
                 return;
             }
             // if (seconds < 300) {
@@ -577,11 +579,15 @@ export default function Payment({ navigation, route }) {
             style={{ color: 'white', fontWeight: 700 }}
         >
             {(loading || isLoading) && (
-                <ActivityIndicator size="large" color="white" className="h-[100%] w-[100%] absolute z-50 bg-black/50" />
+                <ActivityIndicator
+                    size="large"
+                    color="white"
+                    className="-top-16 h-[120%] w-[100%] absolute z-50 bg-black/50"
+                />
             )}
             {isSuccess && (
                 <View className=" flex-1">
-                    <View className="bg-orange-400  absolute w-full justify-center items-center top-0 z-50 ">
+                    <View className="bg-orange-400  absolute w-full justify-center items-center top-0 z-10 ">
                         {/* <Timer
                             isActive={true}
                             selectedSeats={selectedSeats}

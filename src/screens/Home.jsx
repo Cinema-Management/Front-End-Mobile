@@ -20,67 +20,97 @@ import useMovieSchedule from '../queries/useMovieSchedule';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useFocusEffect } from '@react-navigation/native';
 import { TimerContext } from '../utils/TimerContext';
+import Animated, { Extrapolation, interpolate, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 
 const { width, height } = Dimensions.get('window');
 const CarouselComponent = memo(({ index, data, navigation }) => {
+    const scrollX = useSharedValue(0);
     const renderItem = useCallback(
-        ({ item }) => (
-            <TouchableWithoutFeedback onPress={() => navigation.navigate('MovieDetail', { item, index })}>
-                <View style={styles.item}>
-                    <Image source={{ uri: item.image }} style={styles.image} />
-                    <View
-                        className="gap-x-5 gap-y-3 mx-2 h-auto rounded-3xl relative bottom-24"
-                        style={{ backgroundColor: 'rgba(60, 60, 60,0.9)' }}
-                    >
-                        <View className="">
-                            <Text className="text-white uppercase text-[22px] leading-8 font-bold" numberOfLines={2}>
-                                {item.name}
-                            </Text>
-                            <Text className="text-gray-400 text-[15px]">{item.duration} phút</Text>
-                            <Text className="text-gray-400 text-[15px]" numberOfLines={1}>
-                                {item.genres}
-                            </Text>
-                        </View>
-                        <View className="flex-row  justify-between items-center">
-                            <View className="flex-row space-x-1">
-                                <Icon name="star" size={20} color="#FF9933" />
-                                <Text className="text-white font-bold text-sm">8.7/10</Text>
-                            </View>
-                            <TouchableOpacity
-                                className="w-24 mb-2 mr-2 py-2 rounded-[100px] border border-white justify-center items-center "
-                                disabled={index != 1 ? false : true}
-                                onPress={() => navigation.navigate('Film', { item })}
-                            >
-                                <LinearGradient
-                                    colors={['#ED999A', '#F6D365']}
-                                    style={styles.gradient}
-                                    start={{ x: 0.4, y: 0.1 }}
-                                    end={{ x: 0.9, y: 0.2 }}
-                                    className="absolute rounded-[100px]"
-                                />
+        ({ item, animationValue }) => {
+            const animatedStyle = useAnimatedStyle(() => {
+                const scale = interpolate(
+                    animationValue.value,
+                    [-1, 0, 1],
+                    [0.5, 1, 0.5], // Scale ảnh giữa lớn nhất
+                );
 
-                                <Text className="text-white font-bold text-base  ">Đặt Vé</Text>
-                            </TouchableOpacity>
+                const translateX = interpolate(
+                    animationValue.value,
+                    [-1, 0, 1],
+                    [-50, -20, -50], // Dịch chuyển ảnh sang trái hoặc phải
+                );
+
+                return {
+                    transform: [
+                        { scale }, // Hiệu ứng thu phóng
+                        { translateX }, // Hiệu ứng trượt ngang
+                        { rotateZ: `${interpolate(animationValue.value, [-1, 0, 1], [14, 0, -10])}deg` }, // Hiệu ứng xoay
+                    ],
+                };
+            });
+
+            return (
+                <TouchableWithoutFeedback onPress={() => navigation.navigate('MovieDetail', { item, index })}>
+                    <Animated.View style={[animatedStyle, styles.item]} className=" mt-10  ">
+                        <Image
+                            source={{ uri: item.image }}
+                            className="w-[100%] h-[75%] rounded-2xl "
+                            resizeMode="stretch"
+                        />
+                        <View
+                            className="h-auto rounded-3xl  bottom-24 w-[95%] px-3 py-1 gap-y-2"
+                            style={{ backgroundColor: 'rgba(60, 60, 60,0.9)' }}
+                        >
+                            <View className="">
+                                <Text className="text-white uppercase text-base leading-8 font-bold" numberOfLines={2}>
+                                    {item.name}
+                                </Text>
+                                <Text className="text-gray-400 text-sm">{item.duration} phút</Text>
+                                <Text className="text-gray-400 text-sm" numberOfLines={1}>
+                                    {item.genres}
+                                </Text>
+                            </View>
+                            <View className="flex-row  justify-between items-center ">
+                                <View className="flex-row space-x-1">
+                                    <Icon name="star" size={20} color="#FF9933" />
+                                    <Text className="text-white font-bold text-sm">8.7/10</Text>
+                                </View>
+                                <TouchableOpacity
+                                    className="w-20 mb-2 mr-2 py-1 rounded-[100px] border border-white justify-center items-center"
+                                    disabled={index != 1 ? false : true}
+                                    onPress={() => navigation.navigate('Film', { item })}
+                                >
+                                    <LinearGradient
+                                        colors={['#ED999A', '#F6D365']}
+                                        style={styles.gradient}
+                                        start={{ x: 0.4, y: 0.1 }}
+                                        end={{ x: 0.9, y: 0.2 }}
+                                        className="absolute rounded-[100px]"
+                                    />
+
+                                    <Text className="text-white font-bold text-sm  ">Đặt Vé</Text>
+                                </TouchableOpacity>
+                            </View>
                         </View>
-                    </View>
-                </View>
-            </TouchableWithoutFeedback>
-        ),
+                    </Animated.View>
+                </TouchableWithoutFeedback>
+            );
+        },
         [navigation],
     );
     return (
         <View style={styles.carouselContainer}>
             <Carousel
                 keyExtractor={(item) => item.id.toString()}
-                width={width}
+                width={width * 0.6}
                 height={height * 0.6}
                 data={data}
                 renderItem={renderItem}
-                loop
                 scrollAnimationDuration={1000}
                 autoPlayInterval={2000}
-                mode="parallax"
-                // autoPlay
+                style={{ width: width, justifyContent: 'center' }}
+                loop
+                // mode="parallax"
             />
         </View>
     );
@@ -233,17 +263,14 @@ const styles = StyleSheet.create({
         marginTop: -35,
     },
     item: {
-        flexDirection: 'column',
         borderRadius: 10,
-        width: width * 0.96,
-        height: height * 0.7,
+        width: width * 0.73,
+        height: height * 0.6,
+        padding: 10,
+        justifyContent: 'center',
+        alignItems: 'center',
     },
-    image: {
-        width: width * 0.96,
-        height: height * 0.55,
-        objectFit: 'cover',
-        borderRadius: 28,
-    },
+
     loadingContainer: {
         height: '70%',
         justifyContent: 'center',
