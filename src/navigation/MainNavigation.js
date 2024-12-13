@@ -12,6 +12,9 @@ import Food from '../screens/Food';
 import Seat from '../screens/Seat';
 import Payment from '../screens/Payment';
 import TicketDetail from '../screens/TicketDetail';
+import PrivacyPolicy from '../screens/PrivacyPolicy';
+import TermsOfUse from '../screens/TermsOfUse';
+import SupportContact from '../screens/SupportContact';
 const Stack = createStackNavigator();
 
 const MainNavigator = () => {
@@ -35,6 +38,9 @@ const MainNavigator = () => {
             <Stack.Screen name="Food" component={Food} />
             <Stack.Screen name="Seat" component={Seat} />
             <Stack.Screen name="TicketDetail" component={TicketDetail} />
+            <Stack.Screen name="PrivacyPolicy" component={PrivacyPolicy} />
+            <Stack.Screen name="TermsOfUse" component={TermsOfUse} />
+            <Stack.Screen name="SupportContact" component={SupportContact} />
         </Stack.Navigator>
     );
 };

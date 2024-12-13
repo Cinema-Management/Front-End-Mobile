@@ -51,45 +51,43 @@ const CarouselComponent = memo(({ index, data, navigation }) => {
 
             return (
                 <TouchableWithoutFeedback onPress={() => navigation.navigate('MovieDetail', { item, index })}>
-                    <Animated.View style={[animatedStyle, styles.item]} className=" mt-10  ">
+                    <Animated.View style={[animatedStyle, styles.item]} className="-mt-5  ">
                         <Image
                             source={{ uri: item.image }}
                             className="w-[100%] h-[75%] rounded-2xl "
                             resizeMode="stretch"
                         />
                         <View
-                            className="h-auto rounded-3xl  bottom-24 w-[95%] px-3 py-1 gap-y-2"
-                            style={{ backgroundColor: 'rgba(60, 60, 60,0.9)' }}
+                            className="h-auto rounded-3xl  absolute bottom-5 w-[95%] px-3 py-1 gap-y-2"
+                            style={{ backgroundColor: 'rgba(60, 60, 60,0.5)' }}
                         >
                             <View className="">
                                 <Text className="text-white uppercase text-base leading-8 font-bold" numberOfLines={2}>
                                     {item.name}
                                 </Text>
-                                <Text className="text-gray-400 text-sm">{item.duration} phút</Text>
-                                <Text className="text-gray-400 text-sm" numberOfLines={1}>
-                                    {item.genres}
-                                </Text>
-                            </View>
-                            <View className="flex-row  justify-between items-center ">
-                                <View className="flex-row space-x-1">
-                                    <Icon name="star" size={20} color="#FF9933" />
-                                    <Text className="text-white font-bold text-sm">8.7/10</Text>
-                                </View>
-                                <TouchableOpacity
-                                    className="w-20 mb-2 mr-2 py-1 rounded-[100px] border border-white justify-center items-center"
-                                    disabled={index != 1 ? false : true}
-                                    onPress={() => navigation.navigate('Film', { item })}
-                                >
-                                    <LinearGradient
-                                        colors={['#ED999A', '#F6D365']}
-                                        style={styles.gradient}
-                                        start={{ x: 0.4, y: 0.1 }}
-                                        end={{ x: 0.9, y: 0.2 }}
-                                        className="absolute rounded-[100px]"
-                                    />
+                                <View className=" flex-row justify-between ">
+                                    <View className="max-w-[65%] w-[65%]">
+                                        <Text className="text-gray-400 text-sm">{item.duration} phút</Text>
+                                        <Text className="text-gray-400 text-xs " numberOfLines={1}>
+                                            {item.genres}
+                                        </Text>
+                                    </View>
+                                    <TouchableOpacity
+                                        className="w-20 mb-2 mr-2 py-1 mt-1 rounded-[100px] border border-white justify-center items-center  flex-1"
+                                        disabled={index != 1 ? false : true}
+                                        onPress={() => navigation.navigate('Film', { item })}
+                                    >
+                                        <LinearGradient
+                                            colors={['#ED999A', '#F6D365']}
+                                            style={styles.gradient}
+                                            start={{ x: 0.4, y: 0.1 }}
+                                            end={{ x: 0.9, y: 0.2 }}
+                                            className="absolute rounded-[100px]"
+                                        />
 
-                                    <Text className="text-white font-bold text-sm  ">Đặt Vé</Text>
-                                </TouchableOpacity>
+                                        <Text className="text-white font-bold text-sm  ">Đặt Vé</Text>
+                                    </TouchableOpacity>
+                                </View>
                             </View>
                         </View>
                     </Animated.View>
