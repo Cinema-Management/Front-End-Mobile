@@ -181,7 +181,7 @@ const Film = ({ navigate, route }) => {
             style={{
                 color: 'white',
                 fontWeight: 700,
-                fontSize: 18,
+                fontSize: 16,
                 textTransform: 'uppercase',
             }}
             line={1}

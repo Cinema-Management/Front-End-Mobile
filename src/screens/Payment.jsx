@@ -167,7 +167,7 @@ export default function Payment({ navigation, route }) {
                     return freeProduct ? freeProduct.price * promotion.freeQuantity : 0;
                 } else if (promotion.type === 1 || promotion.type === 2) {
                     // Loại giảm giá
-                    return promotion.discountAmount || 0;
+                    return calculateDiscount(promotion, totalAmount);
                 }
                 return 0;
             };
@@ -182,6 +182,7 @@ export default function Payment({ navigation, route }) {
                 // Tính giá trị khuyến mãi
                 const currentValue = calculatePromotionValue(current);
                 const bestValue = best ? calculatePromotionValue(best) : 0;
+                console.log('Promotion:', current, 'Current Value:', currentValue, 'Best Value:', bestValue);
 
                 return currentValue > bestValue ? current : best;
             }, null);

@@ -69,7 +69,7 @@ const TaiKhoan = ({ navigation }) => {
                         <View className="flex-row py-1 px-3" style={{ backgroundColor: colors.backgroundColor }}>
                             <Avatar photoUrl={{ uri: currentUser.avatar }} size={70} bordered={true} />
 
-                            <View className=" justify-center ml-5 flex-1">
+                            <View className=" justify-center ml-2 flex-1 ">
                                 <View className=" flex-row">
                                     {data?.totalAmount > 4000000 ? (
                                         <MaterialIcons name="workspace-premium" size={30} color="orange" />
@@ -79,7 +79,9 @@ const TaiKhoan = ({ navigation }) => {
                                         <MaterialIcons name="star" size={20} color="orange" />
                                     )}
 
-                                    <Text className="text-white text-base font-normal ml-2">{currentUser.name}</Text>
+                                    <Text className="text-white text-base font-normal ml-2  w-[85%]">
+                                        {currentUser.name}
+                                    </Text>
                                 </View>
                                 {/* <View className=" flex-row mt-2">
                                     <AntDesign name="gift" size={20} color="orange" />
@@ -97,18 +99,7 @@ const TaiKhoan = ({ navigation }) => {
                                 onPress={() => navigation.navigate('UpdateInfo')}
                             >
                                 <FontAwesome6 name="edit" size={24} color="orange" />
-                                <Text className="text-gray-200 text-base font-normal ml-1">Thông tin</Text>
-                            </TouchableOpacity>
-
-                            <View className="w-0.5 h-9 bg-white mx-5" />
-
-                            <TouchableOpacity
-                                className="flex-row"
-                                style={{ width: wp(40) }}
-                                // onPress={() => navigation.navigate('TicketDetail')}
-                            >
-                                <Fontisto name="bell" size={24} color="orange" />
-                                <Text className="text-white text-base font-normal ml-1">Thông báo</Text>
+                                <Text className="text-gray-200 text-base font-normal ml-1">Thông tin tài khoản</Text>
                             </TouchableOpacity>
                         </View>
                         <View
@@ -183,33 +174,41 @@ const TaiKhoan = ({ navigation }) => {
 
                         <View style={{ marginTop: 8, backgroundColor: colors.backgroundColor }}>
                             <View className=" pb-2 h-auto ">
-                                <View className="mt-2 py-5  border-b border-white justify-between flex-row px-3">
-                                    <View className="flex-row">
-                                        <MaterialCommunityIcons name="chat-alert-outline" size={24} color="white" />
-                                        <Text className="text-white text-base font-normal ml-2">Liên hệ hỗ trợ</Text>
+                                <TouchableOpacity onPress={() => navigation.navigate('SupportContact')}>
+                                    <View className="mt-2 py-5  border-b border-white justify-between flex-row px-3">
+                                        <View className="flex-row">
+                                            <MaterialCommunityIcons name="chat-alert-outline" size={24} color="white" />
+                                            <Text className="text-white text-base font-normal ml-2">
+                                                Liên hệ hỗ trợ
+                                            </Text>
+                                        </View>
+                                        <MaterialIcons name="navigate-next" size={24} color="white" />
                                     </View>
-                                    <MaterialIcons name="navigate-next" size={24} color="white" />
-                                </View>
+                                </TouchableOpacity>
 
-                                <View className="py-5  border-b border-white justify-between flex-row px-3">
-                                    <View className="flex-row">
-                                        <MaterialIcons name="menu-book" size={24} color="white" />
-                                        <Text className="text-white text-base font-normal ml-2">
-                                            Điều khoản sử dụng
-                                        </Text>
+                                <TouchableOpacity onPress={() => navigation.navigate('TermsOfUse')}>
+                                    <View className="py-5  border-b border-white justify-between flex-row px-3">
+                                        <View className="flex-row">
+                                            <MaterialIcons name="menu-book" size={24} color="white" />
+                                            <Text className="text-white text-base font-normal ml-2">
+                                                Điều khoản sử dụng
+                                            </Text>
+                                        </View>
+                                        <MaterialIcons name="navigate-next" size={24} color="white" />
                                     </View>
-                                    <MaterialIcons name="navigate-next" size={24} color="white" />
-                                </View>
+                                </TouchableOpacity>
 
-                                <View className="py-5  border-b border-white justify-between flex-row px-3">
-                                    <View className="flex-row">
-                                        <MaterialIcons name="security" size={24} color="white" />
-                                        <Text className="text-white text-base font-normal ml-2">
-                                            Chính sách bảo mật
-                                        </Text>
+                                <TouchableOpacity onPress={() => navigation.navigate('PrivacyPolicy')}>
+                                    <View className="py-5  border-b border-white  justify-between flex-row px-3">
+                                        <View className="flex-row">
+                                            <MaterialIcons name="security" size={24} color="white" />
+                                            <Text className="text-white text-base font-normal ml-2">
+                                                Chính sách bảo mật
+                                            </Text>
+                                        </View>
+                                        <MaterialIcons name="navigate-next" size={24} color="white" />
                                     </View>
-                                    <MaterialIcons name="navigate-next" size={24} color="white" />
-                                </View>
+                                </TouchableOpacity>
                             </View>
                         </View>
                         <View className=" mt-6 mb-6 flex-row justify-between w-full items-center">
