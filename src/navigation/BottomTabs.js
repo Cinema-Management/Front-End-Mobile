@@ -68,7 +68,7 @@ const BottomTabs = ({ navigation }) => {
                     ),
                 }}
             />
-            <Tab.Screen
+            {/* <Tab.Screen
                 name="KM"
                 component={Promotion}
                 options={{
@@ -87,7 +87,7 @@ const BottomTabs = ({ navigation }) => {
                         <AntDesign name="gift" size={22} color={focused ? 'white' : '#555555'} />
                     ),
                 }}
-            />
+            /> */}
             <Tab.Screen
                 name="TK"
                 component={TaiKhoan}
