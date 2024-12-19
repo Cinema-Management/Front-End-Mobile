@@ -7,10 +7,12 @@ import { formatDateTicket, handleChangAge, formatDateTimeSalesInvoice } from '..
 import Barcode from 'react-native-barcode-builder';
 import { TouchableOpacity } from 'react-native';
 var { height, width } = Dimensions.get('window');
-
+import useAddress from '../queries/useAddress';
 const TicketDetail = ({ route, navigation }) => {
     const { ticket } = route.params || {};
-
+    const { data: address = {}, isLoading: isLoadingAddress } = useAddress(
+        ticket?.scheduleCode?.roomCode?.cinemaCode?.code,
+    );
     const groupByProductType = (details) => {
         if (!Array.isArray(details)) {
             return { seat: [], food: [] };
@@ -60,25 +62,23 @@ const TicketDetail = ({ route, navigation }) => {
             <View style={styles.container}>
                 <View style={styles.main} className="rounded-lg">
                     {ticket?.inactive && (
-                        <Text className="absolute text-red-200 top-[40%] text-3xl  flex-1  font-bold -rotate-45 ">
-                            Hết hạn sử dụng
-                        </Text>
+                        <Text className="absolute text-red-200 top-[40%] text-3xl  flex-1  font-bold -rotate-45 "></Text>
                     )}
-                    <View style={styles.info} className=" pt-4">
-                        <View style={{ width: wp(25) }} className=" items-center  h-full ">
+                    <View style={styles.info} className=" pt-4  ">
+                        <View style={{ width: wp(25) }} className="  h-full">
                             <Image
-                                resizeMode="contain"
+                                resizeMode="stretch"
                                 source={{ uri: ticket?.scheduleCode?.movieCode?.image }}
-                                style={{ height: hp(14), width: wp(20), borderRadius: 5 }}
+                                style={{ height: hp(14), width: wp(23), borderRadius: 5 }}
                             />
                         </View>
 
-                        <View style={{ width: wp(55) }} className=" h-full  ">
+                        <View style={{ width: wp(55) }} className=" h-full ">
                             <View className="  flex-row  h-[15%] ">
                                 <Text
-                                    numberOfLines={1}
+                                    numberOfLines={2}
                                     ellipsizeMode="tail"
-                                    className="font-semibold text-base uppercase  max-w-[90%]  "
+                                    className="font-bold  text-base uppercase  max-w-[90%] "
                                 >
                                     {ticket?.scheduleCode?.movieCode?.name}
                                 </Text>
@@ -89,28 +89,50 @@ const TicketDetail = ({ route, navigation }) => {
                                     </Text>
                                 </View>
                             </View>
-                            <Text className="text-black text-sm font-normal uppercase mb-2 ">
+                            <Text className="text-black text-xs font-normal uppercase mb-2 ">
                                 {ticket?.scheduleCode?.screeningFormatCode?.name}{' '}
                                 {ticket?.scheduleCode?.audioCode?.name === 'Gốc'
                                     ? ''
                                     : ' ' + ticket?.scheduleCode?.audioCode?.name}
-                                <Text className="text-[15px]"> Phụ đề </Text>
+                                <Text className="text-xs">Phụ đề </Text>
                                 {ticket?.scheduleCode?.subtitleCode?.name}
                             </Text>
-                            <Text className="text-black text-sm font-normal ">
+                            {/* <Text className="text-black text-sm font-normal ">
                                 {formatDateTicket(ticket?.scheduleCode?.startTime)}
-                            </Text>
-                            <Text className="text-black text-sm font-bold ">
+                            </Text> */}
+                            <Text className="text-black text-base font-bold ">
                                 {ticket?.scheduleCode?.roomCode?.cinemaCode?.name}
                             </Text>
-                            <Text className="text-black text-sm font-bold ">
-                                {ticket?.scheduleCode?.roomCode?.name}
-                            </Text>
+                            <Text className="text-black text-xs ">{address?.fullAddress}</Text>
                         </View>
                     </View>
                     {/* Detail */}
 
-                    <View style={{ width: wp(80) }} className=" mt-5 pb-5  items-center ">
+                    <View style={{ width: wp(80) }} className="  pb-5  items-center ">
+                        <View className="flex-row   justify-between items-center  py-2">
+                            <Text className="text-sm text-black h-full " style={{ width: wp(30) }}>
+                                Phòng chiếu
+                            </Text>
+
+                            <Text
+                                className="text-sm text-black h-full  flex-1 text-right font-bold"
+                                style={{ width: wp(80) }}
+                            >
+                                {ticket?.scheduleCode?.roomCode?.name}
+                            </Text>
+                        </View>
+                        <View className="flex-row   justify-between items-center  py-2">
+                            <Text className="text-sm text-black h-full " style={{ width: wp(30) }}>
+                                Suất chiếu
+                            </Text>
+
+                            <Text
+                                className="text-sm text-black h-full  flex-1 text-right font-bold"
+                                style={{ width: wp(80) }}
+                            >
+                                {formatDateTicket(ticket?.scheduleCode?.startTime)}
+                            </Text>
+                        </View>
                         <View className="flex-row   justify-between items-center  py-2">
                             <Text className="text-sm text-black h-full " style={{ width: wp(30) }}>
                                 Số ghế ({groupedDetailsByType?.seat?.length})
@@ -166,7 +188,7 @@ const TicketDetail = ({ route, navigation }) => {
                             </Text>
                         </View>
                         <View className="flex-row   justify-between items-center  ">
-                            <Text className="text-sm text-black h-full ">Thời gian giao dịch:</Text>
+                            <Text className="text-sm text-black h-full ">Thời gian giao dịch</Text>
 
                             <Text className="text-sm  h-full  flex-1 text-right font-light  text-blue-500">
                                 {formatDateTimeSalesInvoice(ticket?.createdAt)}
